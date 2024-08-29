@@ -27,7 +27,7 @@ const Header = () => {
                     <button className="btn btn-sm btn-filter me-1">Assignee</button>
                     <button className="btn btn-sm btn-filter me-1">More</button>
                     |
-                    <button type="button" class="btn btn-link">Filter</button>
+                    <button type="button" className="btn btn-link">Filter</button>
                 </div>
                 <div className="right-side">
                     <button className="btn btn-sm btn-filter me-1">Basic</button>

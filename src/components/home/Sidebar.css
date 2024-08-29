@@ -1,0 +1,71 @@
+.card {
+    border: none;
+    background: rgb(70, 70, 70);
+}
+
+.card-header {
+    padding: 0;
+    border-radius: 5px;
+}
+
+.btn-filter-sidebar { 
+    background: none;
+    color: white;
+    border: none;
+    padding: 10px;
+}
+
+.btn-filter-sidebar { 
+    background: none;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.btn-filter-sidebar:hover { 
+    background: rgb(100, 100, 100);
+}
+
+.btn-filter-sidebar:active { 
+    background: rgb(112, 112, 112);
+}
+
+.list-group {
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.list-group-item {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px rgb(86, 86, 86) solid;
+    background: rgb(62, 62, 62);
+
+    color: white;
+
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background: rgb(95, 95, 95);
+}
+
+.list-group-item.active {
+    background: rgb(95, 109, 130);
+    border: 1px rgb(86, 86, 86) solid;
+    color: rgb(37, 56, 83);
+}
+
+.list-group-item.active:hover {
+    color: white;
+}
+
+.left-side {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.right-side {
+    font-size: 13px;
+}
