@@ -37,27 +37,27 @@
 }
 
 .list-group-item {
-    padding: 7px;
     border-radius: 5px;
     border: 1px rgb(86, 86, 86) solid;
-    background: rgb(62, 62, 62);
-
-    color: white;
-
-    cursor: pointer;
+    background: rgb(44, 44, 44);
 }
 
-.list-group-item:hover {
+.sidebar-item {
+    cursor: pointer;
+    color: white;
+}
+
+.sidebar-item:hover {
     background: rgb(95, 95, 95);
 }
 
-.list-group-item.active {
+.sidebar-item.active {
     background: rgb(95, 109, 130);
     border: 1px rgb(86, 86, 86) solid;
     color: rgb(37, 56, 83);
 }
 
-.list-group-item.active:hover {
+.sidebar-item.active:active {
     color: white;
 }
 

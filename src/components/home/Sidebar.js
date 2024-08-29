@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Sidebar.css'
 
 const Sidebar = () => {
     // const items = Array.from({ length: 11 }, (_, index) => index + 1);
@@ -35,7 +36,7 @@ const Sidebar = () => {
                     <ul className="list-group list-group-flush">
                         {items.map((item, index) => (
                             <li 
-                                className={`list-group-item ${isActiveId === item.id ? 'active' : ''}`}
+                                className={`list-group-item sidebar-item ${isActiveId === item.id ? 'active' : ''}`}
                                 key={item.id}
                                 onClick={() => toggleClass(item.id)}
                                 >

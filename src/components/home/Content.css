@@ -1,0 +1,44 @@
+.timer-header {
+    background: rgb(44, 44, 44);
+}
+
+.timer-content {
+    height: 75px;
+    background: rgb(70, 70, 70);
+}
+
+.timer-content > .left-side {
+    width: 50% !important;
+}
+
+.timer-title {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+}
+
+.timer-title:focus {
+    border: none;
+}
+
+.timer-history {
+    background: rgb(70, 70, 70);
+}
+
+.timer-history > hr {
+    width: 120%;
+    border: 1px solid #ccc;
+    margin: 0;
+    margin-left: -20px;
+}
+
+.timer-history-divider,
+.timer-content,
+.timer-history {
+    color: rgb(214, 214, 214) !important;
+}
+
+.timer-history-content > .left-side,
+.timer-history-content > .right-side {
+    font-size: 10px;
+}
