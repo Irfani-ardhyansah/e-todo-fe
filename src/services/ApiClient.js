@@ -4,7 +4,7 @@ const apiClient = axios.create({
     baseURL: 'http://localhost:8080/api/v1',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': 'RAHASISA'
+      'X-Api-Key': 'RAHASISA'
     },
   });
   export default apiClient;
