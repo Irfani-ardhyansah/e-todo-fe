@@ -1,6 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from "react";
 import apiClient from '../../services/ApiClient';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../provider/authProvider";
 
 const initialValues = {
     email: "",
@@ -8,6 +10,8 @@ const initialValues = {
 };
 
 const Login = () => {
+    const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useAuth();
+    const navigate = useNavigate();
 
     const [values, setValues] = useState(initialValues);
 
@@ -28,7 +32,13 @@ const Login = () => {
             formData.append("password", values.password)
 
             const result = await apiClient.post('/user/login', formData)
-            console.log('result', result)
+            if(result.data.code == 200) {
+                console.log('accessToken', accessToken)
+                console.log('refreshToken', refreshToken)
+                setRefreshToken(result.data.data.refresh_token)
+                setAccessToken(result.data.data.access_token)
+                console.log('result', result.data.data.access_token)
+            }
         } catch(error) {
             console.log('error', error)
         }

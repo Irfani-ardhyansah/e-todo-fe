@@ -10,28 +10,43 @@ import {
 const AuthContext = createContext();
 
 const AuthProvider = ({children}) => {
-    const [token, setToken_] = useState(localStorage.getItem("token"))
+    const [accessToken, setAccessToken_] = useState(localStorage.getItem("accessToken"))
+    const [refreshToken, setRefreshToken_] = useState(localStorage.getItem("refreshToken"))
 
-    const setToken = (newToken) => {
-        setToken_(newToken)
+    const setAccessToken = (newAccessToken) => {
+        setAccessToken_(newAccessToken)
+    }
+
+    const setRefreshToken = (newRefreshToken) => {
+        setRefreshToken_(newRefreshToken)
     }
 
     useEffect(() => {
-        if(token) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + token
-            localStorage.setItem('token', token);
+        if(accessToken) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + accessToken
+            localStorage.setItem('accessToken', accessToken);
         } else {
             delete axios.defaults.headers.common["Authorization"];
-            localStorage.removeItem('token')
+            localStorage.removeItem('accessToken')
         }
-    }, [token])
+    }, [accessToken])
+
+    useEffect(() => {
+        if(refreshToken) {
+            localStorage.setItem('refreshToken', refreshToken);
+        } else {
+            localStorage.removeItem('refreshToken');
+        }
+    }, [refreshToken])
 
     const contextValue = useMemo(
         () => ({
-            token, 
-            setToken,
+            accessToken, 
+            setAccessToken,
+            refreshToken,
+            setRefreshToken,
         }),
-        [token]
+        [accessToken]
     )
 
     return (
