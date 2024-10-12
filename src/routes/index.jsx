@@ -10,7 +10,7 @@ const Routes = () => {
     const routesForAuthenticatedOnly = [
         {
             path: "/",
-            element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
+            element: <ProtectedRoute />, 
             children: [
                 {
                     path: "/",
