@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useAuth } from "../provider/authProvider";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = 'http://localhost:8080/api/v1'
 
 const useAxiosInstance = () => {
   const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useAuth();
+  const navigate = useNavigate();
 
   const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -63,7 +65,11 @@ const useAxiosInstance = () => {
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
             return axiosInstance(originalRequest)
           } catch(err) {
-            console.error("Failed to refresh token", err) 
+            alert("Session expired. Please log in again.");
+            setAccessToken(null);
+            setRefreshToken(null);
+            navigate('/login');
+
             return Promise.reject(err)
           } finally {
             isRefreshing = false 

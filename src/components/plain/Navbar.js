@@ -1,6 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from "../../provider/authProvider";
 
-function Navbar() {
+const Navbar = () => {
+  const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useAuth();
+
+  const handleLogout = () => {
+    setAccessToken("")
+    setRefreshToken("")
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -13,6 +21,9 @@ function Navbar() {
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <a className="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link active" aria-current="page" href="#" onClick={handleLogout}>Logout</a>
               </li>
             </ul>
           </div>

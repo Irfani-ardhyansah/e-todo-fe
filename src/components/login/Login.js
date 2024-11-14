@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import useAxiosInstance from '../../services/ApiClient';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../provider/authProvider";
+import useAuthService from "../../services/Login"
 
 const initialValues = {
     email: "",
@@ -12,7 +13,7 @@ const initialValues = {
 const Login = () => {
     const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
-    const axiosInstance = useAxiosInstance();
+    const { DoLogin } = useAuthService();
 
     const [values, setValues] = useState(initialValues);
 
@@ -31,13 +32,18 @@ const Login = () => {
             const formData = new FormData()   
             formData.append("email", values.email)
             formData.append("password", values.password)
+            const result = await DoLogin(formData)
 
-            const result = await axiosInstance.post('/user/login', formData)
-            if(result.data.code == 200) {
-                setRefreshToken(result.data.data.refresh_token)
-                setAccessToken(result.data.data.access_token)
+            console.log('result', result)
+            // const result = await axiosInstance.post('/user/login', formData)
+            if(result.code == 200) {
+                setRefreshToken(result.data.refresh_token)
+                setAccessToken(result.data.access_token)
+
+                navigate('/');
             }
         } catch(error) {
+            // alert(error.response.data.data)
             console.error('error Login', error)
         }
     }
@@ -55,7 +61,7 @@ const Login = () => {
                                     onChange={handleInputChange} value={values.email}/>
                         </div>
                         <div className="form-group mb-4">
-                            <input type="text" className="form-control" id="formGroupExampleInput2" placeholder="Password" name="password"
+                            <input type="password" className="form-control" id="formGroupExampleInput2" placeholder="Password" name="password"
                                     onChange={handleInputChange} value={values.password}/>
                         </div>
                         <div className="form-group d-flex justify-content-center align-items-center">
