@@ -53,7 +53,7 @@ const useAxiosInstance = () => {
           isRefreshing = true 
 
           try {
-            const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
+            const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
               refresh_token: refreshToken
             }) 
 

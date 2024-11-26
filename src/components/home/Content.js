@@ -24,19 +24,19 @@ const Content = () => {
                             </div>
                             <ul className="list-group list-group-flush timer-group">
                                 <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
-                                        <div className="left-side">
-                                            <input className="timer-title" placeholder="What are you working on ?" />
+                                    <div className="left-side">
+                                        <input className="timer-title" placeholder="What are you working on ?" />
+                                    </div>
+                                    <div className="right-side d-flex align-items-center">
+                                        <div className="timer me-3">
+                                            {timer}
                                         </div>
-                                        <div className="right-side d-flex align-items-center">
-                                            <div className="timer me-3">
-                                                {timer}
-                                            </div>
 
-                                            <button className="btn-action">
-                                                start
-                                            </button>
+                                        <button className="btn-action">
+                                            start
+                                        </button>
 
-                                        </div>
+                                    </div>
                                 </li>
                                 <li className="list-group-item timer-history-divider d-flex justify-content-between">
                                     <div className="left-side">

@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css'
+import useTaskService from "../../services/Task"
 
 const Sidebar = () => {
     // const items = Array.from({ length: 11 }, (_, index) => index + 1);
-
-    const items = [
-        { id: 1, name: 'Item 1' }
-      ];
-
-      let newItemIndex = 4;
-
-      while (items.length < 15) {
-        const newItem = { id: newItemIndex, name: `Item ${newItemIndex}` };
-        items.push(newItem);
-        newItemIndex++;
-      }
-
+    const { GetTask } = useTaskService()
+    const [tasks, setTasks] = useState([])
     const [isActiveId, setActiveId] = useState(null)
+
+    const getTaskData = async () => {
+        const taskResults = await GetTask()
+        setTasks(taskResults.data)
+    }
+
+    useEffect(() => {
+        getTaskData()
+    }, [])
+
     
     const toggleClass = (id) => {
         if(isActiveId == id) {
@@ -34,7 +34,7 @@ const Sidebar = () => {
                         <button className="btn-filter-sidebar" > Created </button>
                     </div>
                     <ul className="list-group list-group-flush">
-                        {items.map((item, index) => (
+                        {tasks.map((item, index) => (
                             <li 
                                 className={`list-group-item sidebar-item ${isActiveId === item.id ? 'active' : ''}`}
                                 key={item.id}
