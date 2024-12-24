@@ -53,7 +53,7 @@ const useAxiosInstance = () => {
           isRefreshing = true 
 
           try {
-            const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, {
+            const { data } = await axios.post(`${BASE_URL}/user/refresh-token`, {
               refresh_token: refreshToken
             }) 
 
@@ -68,7 +68,7 @@ const useAxiosInstance = () => {
             alert("Session expired. Please log in again.");
             setAccessToken(null);
             setRefreshToken(null);
-            navigate('/login');
+            navigate('/login', { replace: true });
 
             return Promise.reject(err)
           } finally {

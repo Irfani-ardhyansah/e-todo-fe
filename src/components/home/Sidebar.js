@@ -9,8 +9,12 @@ const Sidebar = () => {
     const [isActiveId, setActiveId] = useState(null)
 
     const getTaskData = async () => {
-        const taskResults = await GetTask()
-        setTasks(taskResults.data)
+        try {
+            const taskResults = await GetTask()
+            setTasks(taskResults.data)
+        } catch(error) {
+            console.error('Error service task', error)
+        }
     }
 
     useEffect(() => {
@@ -45,7 +49,7 @@ const Sidebar = () => {
                                 </div>
                                 <div className="content-bottom d-flex justify-content-between mb-2">
                                     <div className="left-side">
-                                        RAS-{item.id}
+                                        {item.code}
                                     </div>
                                     <div className="right-side">
                                         IM
@@ -55,7 +59,7 @@ const Sidebar = () => {
                         ))}
                     </ul>
                     <div className="card-footer">
-                        10 of 10000
+                        {tasks.length} of {tasks.length}
                     </div>
                 </div>
             </div>

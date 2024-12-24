@@ -4,6 +4,8 @@ import useAxiosInstance from '../../services/ApiClient';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../provider/authProvider";
 import useAuthService from "../../services/Login"
+import ToastContainerError from "../alerts/ToasContainerError";
+import { toast } from "react-toastify";
 
 const initialValues = {
     email: "",
@@ -43,10 +45,14 @@ const Login = () => {
                 navigate('/');
             }
         } catch(error) {
-            // alert(error.response.data.data)
-            console.error('error Login', error)
+            showErrorToast(error.response.data.data)
+            console.error('error Login', error.response.data.data)
         }
     }
+
+    const showErrorToast = (message) => {
+        toast.error(message);
+    };
 
     return (
         <>
@@ -70,6 +76,8 @@ const Login = () => {
                     </form>   
                 </div>
             </div>
+
+            <ToastContainerError />
         </>
     )
 }
