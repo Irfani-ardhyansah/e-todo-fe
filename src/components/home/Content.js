@@ -4,7 +4,37 @@ import './Content.css'
 import React, { useState, useEffect } from 'react';
 const Content = () => {
 
-    const [timer, setTimer] = useState('00:00:00')
+    const [time, setTime] = useState(0);
+    const [isStart, setIsStart] = useState(false);
+
+    useEffect(() => {
+        let interval = null;
+    
+        if (isStart) {
+          interval = setInterval(() => {
+            setTime((prevTime) => prevTime + 1);
+          }, 1000); 
+        } else {
+          clearInterval(interval);
+        }
+    
+        return () => clearInterval(interval);
+      }, [isStart]);
+
+    const formatTime = (seconds) => {
+        const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0")
+        const mins = String(Math.floor((seconds % 3600 / 60))).padStart(2, "0")
+        const secs = String(seconds % 60).padStart(2, "0")
+        return `${hrs}:${mins}:${secs}`;
+    }
+    
+    const toggleTimer = () => {
+        if(!isStart) {
+            setTime(0)
+        }
+
+        setIsStart((prev) => !prev)
+    }
 
     return (
         <>
@@ -29,11 +59,11 @@ const Content = () => {
                                     </div>
                                     <div className="right-side d-flex align-items-center">
                                         <div className="timer me-3">
-                                            {timer}
+                                            {formatTime(time)}
                                         </div>
 
-                                        <button className="btn-action">
-                                            start
+                                        <button className="btn-action" onClick={toggleTimer}>
+                                            {isStart ? "Stop" : "Start"}
                                         </button>
 
                                     </div>
