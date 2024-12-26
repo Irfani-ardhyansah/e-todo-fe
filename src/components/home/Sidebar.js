@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './Sidebar.css'
 import useTaskService from "../../services/Task"
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux'
 import { setActiveTaskId } from '../../redux/sidebarSlice'
 
@@ -9,6 +10,7 @@ const Sidebar = () => {
     const [tasks, setTasks] = useState([])
     const [isActiveId, setActiveId] = useState(null)
     const dispatch = useDispatch();
+    const timerRunStatus = useSelector((state) => state.content.timerRunStatus); 
 
     const getTaskData = async () => {
         try {
@@ -25,8 +27,13 @@ const Sidebar = () => {
 
     
     const toggleClass = (id) => {
-        let activeId = isActiveId == id ? null : id
+        if(timerRunStatus) {
+            alert("Timer Is Running, Cannot UnSelect Task, Finish Timer First!!!")
+            return
+        }
         
+        let activeId = isActiveId == id ? null : id
+
         setActiveId(activeId)
         dispatch(setActiveTaskId(activeId))
     }

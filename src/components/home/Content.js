@@ -1,14 +1,19 @@
 import Sidebar from './Sidebar';
 import './Content.css'
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux'
 import React, { useState, useEffect } from 'react';
+import { setTimerRunStatus } from '../../redux/contentSlice'
 
 const Content = () => {
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
     const [time, setTime] = useState(0);
     const [isTimerRun, setIsTimerRun] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
+        dispatch(setTimerRunStatus(isTimerRun))
+
         let interval = null;
     
         if (isTimerRun) {
@@ -30,6 +35,11 @@ const Content = () => {
     }
     
     const toggleTimer = () => {
+        if(!activeTaskId) {
+            alert('Select Task First!')
+            return
+        }
+
         if(isTimerRun) {
             setTime(0)
         }
