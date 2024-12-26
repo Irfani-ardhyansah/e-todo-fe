@@ -1,16 +1,17 @@
 import Sidebar from './Sidebar';
 import './Content.css'
-
+import { useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
-const Content = () => {
 
+const Content = () => {
+    const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
     const [time, setTime] = useState(0);
-    const [isStart, setIsStart] = useState(false);
+    const [isTimerRun, setIsTimerRun] = useState(false);
 
     useEffect(() => {
         let interval = null;
     
-        if (isStart) {
+        if (isTimerRun) {
           interval = setInterval(() => {
             setTime((prevTime) => prevTime + 1);
           }, 1000); 
@@ -19,7 +20,7 @@ const Content = () => {
         }
     
         return () => clearInterval(interval);
-      }, [isStart]);
+      }, [isTimerRun]);
 
     const formatTime = (seconds) => {
         const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0")
@@ -29,11 +30,11 @@ const Content = () => {
     }
     
     const toggleTimer = () => {
-        if(!isStart) {
+        if(isTimerRun) {
             setTime(0)
         }
 
-        setIsStart((prev) => !prev)
+        setIsTimerRun((prev) => !prev)
     }
 
     return (
@@ -63,7 +64,7 @@ const Content = () => {
                                         </div>
 
                                         <button className="btn-action" onClick={toggleTimer}>
-                                            {isStart ? "Stop" : "Start"}
+                                            {isTimerRun ? "Stop" : "Start"}
                                         </button>
 
                                     </div>

@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import './Sidebar.css'
 import useTaskService from "../../services/Task"
+import { useDispatch } from 'react-redux'
+import { setActiveTaskId } from '../../redux/sidebarSlice'
 
 const Sidebar = () => {
-    // const items = Array.from({ length: 11 }, (_, index) => index + 1);
     const { GetTask } = useTaskService()
     const [tasks, setTasks] = useState([])
     const [isActiveId, setActiveId] = useState(null)
+    const dispatch = useDispatch();
 
     const getTaskData = async () => {
         try {
@@ -23,11 +25,10 @@ const Sidebar = () => {
 
     
     const toggleClass = (id) => {
-        if(isActiveId == id) {
-            setActiveId(null)
-        } else {
-            setActiveId(id);
-        }
+        let activeId = isActiveId == id ? null : id
+        
+        setActiveId(activeId)
+        dispatch(setActiveTaskId(activeId))
     }
 
     return (
