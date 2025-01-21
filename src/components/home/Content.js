@@ -2,14 +2,22 @@ import Sidebar from './Sidebar';
 import './Content.css'
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { setTimerRunStatus } from '../../redux/contentSlice'
+import { toast } from "react-toastify";
+import useContentService from '../../services/Content';
 
 const Content = () => {
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
     const [time, setTime] = useState(0);
     const [isTimerRun, setIsTimerRun] = useState(false);
+    const [timerId, setTimerId] = useState(0)
+    const [formInput, setFormInput] = useState({
+            title: "",
+        });
+    const [isReadOnly, setIsReadOnly] = useState(false)
     const dispatch = useDispatch();
+    const { DoPostTimer, DoUpdateTimer } = useContentService();
 
     useEffect(() => {
         dispatch(setTimerRunStatus(isTimerRun))
@@ -26,6 +34,14 @@ const Content = () => {
     
         return () => clearInterval(interval);
       }, [isTimerRun]);
+      
+      const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setFormInput((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }, []);
 
     const formatTime = (seconds) => {
         const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0")
@@ -34,18 +50,85 @@ const Content = () => {
         return `${hrs}:${mins}:${secs}`;
     }
     
-    const toggleTimer = () => {
+    const toggleTimer = async () => {
         if(!activeTaskId) {
             alert('Select Task First!')
             return
         }
 
+        if(!isTimerRun) {
+            await startTimer();
+        }
+
         if(isTimerRun) {
-            setTime(0)
+            await stopTimer();
         }
 
         setIsTimerRun((prev) => !prev)
     }
+
+    const startTimer = async () => {
+        try {
+            const formData = new FormData()   
+            formData.append('time', '00:00:00')
+            formData.append('status', 'start')
+            formData.append('title', formInput.title)
+
+            const response = await handlePostTimer('timer/start', activeTaskId, formData)
+
+            const tempTimerId = response.data.id
+            setTimerId(tempTimerId)
+            setIsReadOnly(true)
+        } catch(error) {
+            console.error(`Error Start Time ${error}`)
+        }
+    }
+
+    const stopTimer = async () => {
+        try {
+            setTime(0)
+
+            const formData = new FormData()   
+            formData.append('time', formatTime(time))
+            formData.append('status', 'stop')
+            formData.append('title', formInput.title)
+            
+            await handleUpdateTimer('timer/update', timerId, formData)
+            
+            setIsReadOnly(false)
+            setFormInput((prevFormInput) => ({
+                ...prevFormInput,
+                title: "", 
+            }));
+        } catch(error) {
+            console.error(`Error Stop Timer ${error}`)
+        }
+    }
+
+    const handlePostTimer = async (endpoint, timerIdOrTaskId, data) => {
+        try {
+            const result = await DoPostTimer(endpoint, timerIdOrTaskId, data)
+            return result
+            
+        } catch(error) {
+            showErrorToast(error.response.data.data)
+            console.error('error postTimer', error.response.data.data)
+        }
+    }
+
+    const handleUpdateTimer = async (endpoint, timerIdOrTaskId, data) => {
+        try {
+            DoUpdateTimer(endpoint, timerIdOrTaskId, data)
+            
+        } catch(error) {
+            showErrorToast(error.response.data.data)
+            console.error('error postTimer', error.response.data.data)
+        }
+    }
+
+    const showErrorToast = (message) => {
+        toast.error(message);
+    };
 
     return (
         <>
@@ -66,7 +149,13 @@ const Content = () => {
                             <ul className="list-group list-group-flush timer-group">
                                 <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
                                     <div className="left-side">
-                                        <input className="timer-title" placeholder="What are you working on ?" />
+                                        <input 
+                                                className="timer-title" 
+                                                name="title" 
+                                                value={formInput.title}
+                                                onChange={handleChange}
+                                                placeholder="What are you working on ?"
+                                                readOnly={isReadOnly} />
                                     </div>
                                     <div className="right-side d-flex align-items-center">
                                         <div className="timer me-3">
