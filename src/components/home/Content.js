@@ -6,9 +6,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { setTimerRunStatus } from '../../redux/contentSlice'
 import { toast } from "react-toastify";
 import useContentService from '../../services/Content';
+import useTaskDetailHistoryService from "../../services/TaskDetailHistory"
+import { v4 as uuidv4 } from 'uuid';
+import { formatDate } from "../../utils/dateHelper";
 
 const Content = () => {
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
+    const [taskDetailHistories, setTaskDetailHistories] = useState([])
     const [time, setTime] = useState(0);
     const [isTimerRun, setIsTimerRun] = useState(false);
     const [timerId, setTimerId] = useState(0)
@@ -18,6 +22,17 @@ const Content = () => {
     const [isReadOnly, setIsReadOnly] = useState(false)
     const dispatch = useDispatch();
     const { DoPostTimer, DoUpdateTimer } = useContentService();
+    const { GetTaskDetailHistory } = useTaskDetailHistoryService()
+
+    useEffect(() => {
+        getTaskDetailHistoryData().then(data => {
+            const updatedData = data.map(item => ({
+                ...item,
+                uuid: uuidv4()
+            }));
+            setTaskDetailHistories(updatedData);
+        });
+    }, [])
 
     useEffect(() => {
         dispatch(setTimerRunStatus(isTimerRun))
@@ -25,23 +40,33 @@ const Content = () => {
         let interval = null;
     
         if (isTimerRun) {
-          interval = setInterval(() => {
-            setTime((prevTime) => prevTime + 1);
-          }, 1000); 
+            interval = setInterval(() => {
+                setTime((prevTime) => prevTime + 1);
+            }, 1000); 
         } else {
-          clearInterval(interval);
+            clearInterval(interval);
         }
     
         return () => clearInterval(interval);
-      }, [isTimerRun]);
-      
-      const handleChange = useCallback((e) => {
+    }, [isTimerRun]);
+    
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         setFormInput((prevData) => ({
-          ...prevData,
-          [name]: value,
+            ...prevData,
+            [name]: value,
         }));
-      }, []);
+    }, []);
+
+    const getTaskDetailHistoryData = async () => {
+        try {
+            const taskResults = await GetTaskDetailHistory()
+            console.log(taskResults.data)
+            return taskResults.data
+        } catch(error) {
+            console.error('Error service task', error)
+        }
+    }
 
     const formatTime = (seconds) => {
         const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0")
@@ -168,7 +193,51 @@ const Content = () => {
 
                                     </div>
                                 </li>
-                                <li className="list-group-item timer-history-divider d-flex justify-content-between">
+                                {taskDetailHistories.map((item) => (
+                                    <React.Fragment key={item.uuid}>
+                                        <li className="list-group-item timer-history-divider d-flex justify-content-between"
+                                            key={`${item.uuid}-divider`}
+                                        >
+                                            <div className="left-side">
+                                                {formatDate(item.start_date)} - {formatDate(item.end_date)}
+                                            </div>
+                                            <div className="right-side">
+                                                {item.total_time}
+                                            </div>
+                                        </li>
+                                        <li className="list-group-item timer-history"
+                                            key={`${item.uuid}-history`}
+                                        >
+                                            {item.data_detail.map((data_detail) => (
+                                                <React.Fragment key={item.uuid}>
+                                                    <div className="d-flex justify-content-between mb-1">
+                                                        <div className="left-side">
+                                                            {formatDate(data_detail.date)}
+                                                        </div>
+                                                        <div className="right-side">
+                                                            00:00:00
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    {data_detail.data_grouped.map((data_grouped, index) => (
+                                                        <React.Fragment key={item.uuid}>
+                                                            <div className="d-flex justify-content-between mt-1 timer-history-content">
+                                                                <div className="left-side">
+                                                                    {index + 1}. {data_grouped.task_name}
+                                                                </div>
+                                                                <div className="right-side">
+                                                                    {data_grouped.time}
+                                                                </div>
+                                                            </div>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </React.Fragment>
+                                            ))}
+                                        </li>
+                                    </React.Fragment>
+                                ))}
+
+                                {/* <li className="list-group-item timer-history-divider d-flex justify-content-between">
                                     <div className="left-side">
                                         This Weekend
                                     </div>
@@ -238,7 +307,7 @@ const Content = () => {
                                             00:00:00
                                         </div>
                                     </div>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </div>
