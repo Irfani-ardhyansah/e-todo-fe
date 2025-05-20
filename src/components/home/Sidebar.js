@@ -11,6 +11,7 @@ const Sidebar = () => {
     const [isActiveId, setActiveId] = useState(null)
     const dispatch = useDispatch();
     const timerRunStatus = useSelector((state) => state.content.timerRunStatus); 
+    const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
 
     const getTaskData = async () => {
         try {
@@ -24,6 +25,10 @@ const Sidebar = () => {
     useEffect(() => {
         getTaskData()
     }, [])
+
+    useEffect(() => {
+        setActiveId(null)
+    }, [activeTaskId])
 
     
     const toggleClass = (id) => {

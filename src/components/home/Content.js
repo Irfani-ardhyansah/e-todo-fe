@@ -1,79 +1,58 @@
-import Sidebar from './Sidebar';
-import './Content.css'
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux'
 import React, { useState, useEffect, useCallback } from 'react';
-import { setTimerRunStatus } from '../../redux/contentSlice'
+import { useSelector, useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
+
+import Sidebar from './Sidebar';
+import './Content.css';
+
+import { setTimerRunStatus } from '../../redux/contentSlice'
+import { setActiveTaskId } from '../../redux/sidebarSlice'
+
 import useContentService from '../../services/Content';
 import useTaskDetailHistoryService from "../../services/TaskDetailHistory"
-import { v4 as uuidv4 } from 'uuid';
-import { formatDate } from "../../utils/dateHelper";
+import useTimer from '../../hooks/useTimer';
+import TaskHistoryList from './TaskHistoryList';
 
 const Content = () => {
+    const dispatch = useDispatch();
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
-    const [taskDetailHistories, setTaskDetailHistories] = useState([])
-    const [time, setTime] = useState(0);
+
+    const { DoPostTimer, DoUpdateTimer } = useContentService();
+    const { GetTaskDetailHistory } = useTaskDetailHistoryService();
+
+    const [taskDetailHistories, setTaskDetailHistories] = useState([]);
     const [isTimerRun, setIsTimerRun] = useState(false);
-    const [timerId, setTimerId] = useState(0)
+    const [timerId, setTimerId] = useState(0);
     const [formInput, setFormInput] = useState({
             title: "",
         });
-    const [isReadOnly, setIsReadOnly] = useState(false)
-    const dispatch = useDispatch();
-    const { DoPostTimer, DoUpdateTimer } = useContentService();
-    const { GetTaskDetailHistory } = useTaskDetailHistoryService()
+    const [isReadOnly, setIsReadOnly] = useState(false);
+
+    const { time, setTime, formatTime, reset } = useTimer(isTimerRun);
 
     useEffect(() => {
-        getTaskDetailHistoryData().then(data => {
-            const updatedData = data.map(item => ({
-                ...item,
-                uuid: uuidv4()
-            }));
-            setTaskDetailHistories(updatedData);
-        });
+        fetchTaskDetailHistory();
     }, [])
 
     useEffect(() => {
         dispatch(setTimerRunStatus(isTimerRun))
-
-        let interval = null;
-    
-        if (isTimerRun) {
-            interval = setInterval(() => {
-                setTime((prevTime) => prevTime + 1);
-            }, 1000); 
-        } else {
-            clearInterval(interval);
-        }
-    
-        return () => clearInterval(interval);
     }, [isTimerRun]);
     
+    const fetchTaskDetailHistory = async () => {
+        try {
+            const result = await GetTaskDetailHistory();
+            const updated = result.data.map((item) => ({ ...item, uuid: uuidv4() }));
+            setTaskDetailHistories(updated);
+        } catch(error) {
+            console.error('Failed to fetch task history:', error);
+        }
+    };
+
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
-        setFormInput((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        setFormInput((prev) => ({...prev, [name]: value, }));
     }, []);
-
-    const getTaskDetailHistoryData = async () => {
-        try {
-            const taskResults = await GetTaskDetailHistory()
-            console.log(taskResults.data)
-            return taskResults.data
-        } catch(error) {
-            console.error('Error service task', error)
-        }
-    }
-
-    const formatTime = (seconds) => {
-        const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0")
-        const mins = String(Math.floor((seconds % 3600 / 60))).padStart(2, "0")
-        const secs = String(seconds % 60).padStart(2, "0")
-        return `${hrs}:${mins}:${secs}`;
-    }
     
     const toggleTimer = async () => {
         if(!activeTaskId) {
@@ -83,9 +62,7 @@ const Content = () => {
 
         if(!isTimerRun) {
             await startTimer();
-        }
-
-        if(isTimerRun) {
+        } else {
             await stopTimer();
         }
 
@@ -99,10 +76,8 @@ const Content = () => {
             formData.append('status', 'start')
             formData.append('title', formInput.title)
 
-            const response = await handlePostTimer('timer/start', activeTaskId, formData)
-
-            const tempTimerId = response.data.id
-            setTimerId(tempTimerId)
+            const response = await DoPostTimer('timer/start', activeTaskId, formData)
+            setTimerId(response.data.id)
             setIsReadOnly(true)
         } catch(error) {
             console.error(`Error Start Time ${error}`)
@@ -111,49 +86,24 @@ const Content = () => {
 
     const stopTimer = async () => {
         try {
-            setTime(0)
-
             const formData = new FormData()   
             formData.append('time', formatTime(time))
             formData.append('status', 'stop')
             formData.append('title', formInput.title)
             
-            await handleUpdateTimer('timer/update', timerId, formData)
-            
+            await DoUpdateTimer('timer/update', timerId, formData)
+            reset();
             setIsReadOnly(false)
             setFormInput((prevFormInput) => ({
                 ...prevFormInput,
                 title: "", 
             }));
+            fetchTaskDetailHistory();
+            dispatch(setActiveTaskId(null));
         } catch(error) {
             console.error(`Error Stop Timer ${error}`)
         }
     }
-
-    const handlePostTimer = async (endpoint, timerIdOrTaskId, data) => {
-        try {
-            const result = await DoPostTimer(endpoint, timerIdOrTaskId, data)
-            return result
-            
-        } catch(error) {
-            showErrorToast(error.response.data.data)
-            console.error('error postTimer', error.response.data.data)
-        }
-    }
-
-    const handleUpdateTimer = async (endpoint, timerIdOrTaskId, data) => {
-        try {
-            DoUpdateTimer(endpoint, timerIdOrTaskId, data)
-            
-        } catch(error) {
-            showErrorToast(error.response.data.data)
-            console.error('error postTimer', error.response.data.data)
-        }
-    }
-
-    const showErrorToast = (message) => {
-        toast.error(message);
-    };
 
     return (
         <>
@@ -193,121 +143,7 @@ const Content = () => {
 
                                     </div>
                                 </li>
-                                {taskDetailHistories.map((item) => (
-                                    <React.Fragment key={item.uuid}>
-                                        <li className="list-group-item timer-history-divider d-flex justify-content-between"
-                                            key={`${item.uuid}-divider`}
-                                        >
-                                            <div className="left-side">
-                                                {formatDate(item.start_date)} - {formatDate(item.end_date)}
-                                            </div>
-                                            <div className="right-side">
-                                                {item.total_time}
-                                            </div>
-                                        </li>
-                                        <li className="list-group-item timer-history"
-                                            key={`${item.uuid}-history`}
-                                        >
-                                            {item.data_detail.map((data_detail) => (
-                                                <React.Fragment key={item.uuid}>
-                                                    <div className="d-flex justify-content-between mb-1">
-                                                        <div className="left-side">
-                                                            {formatDate(data_detail.date)}
-                                                        </div>
-                                                        <div className="right-side">
-                                                            00:00:00
-                                                        </div>
-                                                    </div>
-                                                    <hr />
-                                                    {data_detail.data_grouped.map((data_grouped, index) => (
-                                                        <React.Fragment key={item.uuid}>
-                                                            <div className="d-flex justify-content-between mt-1 timer-history-content">
-                                                                <div className="left-side">
-                                                                    {index + 1}. {data_grouped.task_name}
-                                                                </div>
-                                                                <div className="right-side">
-                                                                    {data_grouped.time}
-                                                                </div>
-                                                            </div>
-                                                        </React.Fragment>
-                                                    ))}
-                                                </React.Fragment>
-                                            ))}
-                                        </li>
-                                    </React.Fragment>
-                                ))}
-
-                                {/* <li className="list-group-item timer-history-divider d-flex justify-content-between">
-                                    <div className="left-side">
-                                        This Weekend
-                                    </div>
-                                    <div className="right-side">
-                                        00:00:00
-                                    </div>
-                                </li>
-                                <li className="list-group-item timer-history">
-                                    <div className="d-flex justify-content-between mb-1">
-                                        <div className="left-side">
-                                            FRI, 16 Aug
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div className="d-flex justify-content-between mt-1 timer-history-content">
-                                        <div className="left-side">
-                                            1. Task Create
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mt-1 timer-history-content">
-                                        <div className="left-side">
-                                            2. Task Update
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li className="list-group-item timer-history-divider d-flex justify-content-between">
-                                    <div className="left-side">
-                                        Aug, 05 - Aug, 11
-                                    </div>
-                                    <div className="right-side">
-                                        00:00:00
-                                    </div>
-                                </li>
-                                <li className="list-group-item timer-history">
-                                    <div className="d-flex justify-content-between mb-1">
-                                        <div className="left-side">
-                                            FRI, 09 Aug
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div className="d-flex justify-content-between mt-1 timer-history-content">
-                                        <div className="left-side">
-                                            1. Task Create
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mt-1 timer-history-content">
-                                        <div className="left-side">
-                                            2. Task Update
-                                        </div>
-                                        <div className="right-side">
-                                            00:00:00
-                                        </div>
-                                    </div>
-                                </li> */}
+                                <TaskHistoryList histories={taskDetailHistories} />
                             </ul>
                         </div>
                     </div>
