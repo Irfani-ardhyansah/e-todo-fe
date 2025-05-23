@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux'
 import { setActiveTaskId } from '../../redux/sidebarSlice'
 
+const ACTIVE_TASK_KEY = "active_task"; 
+
 const Sidebar = () => {
     const { GetTask } = useTaskService()
     const [tasks, setTasks] = useState([])
@@ -27,10 +29,24 @@ const Sidebar = () => {
     }, [])
 
     useEffect(() => {
-        setActiveId(null)
+        if (tasks.length > 0) {
+            const activeTaskIdStorage = localStorage.getItem(ACTIVE_TASK_KEY);
+            const parsedId = parseInt(activeTaskIdStorage, 10);
+        
+            if (!isNaN(parsedId)) {
+                setActiveId(parsedId);
+                dispatch(setActiveTaskId(parsedId));
+            }
+        }
+    }, [tasks]);
+
+    useEffect(() => {
+        const activeTaskIdStorage = localStorage.getItem(ACTIVE_TASK_KEY);
+        if(!activeTaskIdStorage) {
+            setActiveId(null)
+        }
     }, [activeTaskId])
 
-    
     const toggleClass = (id) => {
         if(timerRunStatus) {
             alert("Timer Is Running, Cannot UnSelect Task, Finish Timer First!!!")
@@ -38,9 +54,10 @@ const Sidebar = () => {
         }
         
         let activeId = isActiveId == id ? null : id
-
+        localStorage.setItem(ACTIVE_TASK_KEY, activeId);
         setActiveId(activeId)
         dispatch(setActiveTaskId(activeId))
+
     }
 
     return (
