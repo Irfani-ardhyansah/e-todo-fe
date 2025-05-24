@@ -2,17 +2,20 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
+import { setTimerIdRedux, setTimerTitleRedux } from '../../redux/contentSlice'
 
 import Sidebar from './Sidebar';
 import './Content.css';
 
-import { setTimerRunStatus } from '../../redux/contentSlice'
 import { setActiveTaskId } from '../../redux/sidebarSlice'
 
 import useContentService from '../../services/Content';
 import useTaskDetailHistoryService from "../../services/TaskDetailHistory"
 import useTimer from '../../hooks/useTimer';
 import TaskHistoryList from './TaskHistoryList';
+
+const ACTIVE_TASK_KEY = "active_task"; 
+const TIMER_DATA_KEY = 'stopwatch_data_state';
 
 const Content = () => {
     const dispatch = useDispatch();
@@ -22,22 +25,24 @@ const Content = () => {
     const { GetTaskDetailHistory } = useTaskDetailHistoryService();
 
     const [taskDetailHistories, setTaskDetailHistories] = useState([]);
-    const [isTimerRun, setIsTimerRun] = useState(false);
-    const [timerId, setTimerId] = useState(0);
     const [formInput, setFormInput] = useState({
             title: "",
         });
     const [isReadOnly, setIsReadOnly] = useState(false);
 
-    const { time, setTime, formatTime, reset } = useTimer(isTimerRun);
+    const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
 
     useEffect(() => {
         fetchTaskDetailHistory();
-    }, [])
 
-    useEffect(() => {
-        dispatch(setTimerRunStatus(isTimerRun))
-    }, [isTimerRun]);
+        const localStorageTimerData = JSON.parse(localStorage.getItem(TIMER_DATA_KEY));
+        if (localStorageTimerData) {
+            setFormInput((prev) => ({
+                ...prev,
+                title: localStorageTimerData.timerTitleRedux,
+            }));
+        }
+    }, [])
     
     const fetchTaskDetailHistory = async () => {
         try {
@@ -61,45 +66,61 @@ const Content = () => {
         }
 
         if(!isTimerRun) {
-            await startTimer();
+            let response = await startTimer();
+            
+            dispatch(setTimerIdRedux(response.data.id));
+
+            setIsTimerRun(true);
+            setTimerId(response.data.id);
+            setIsReadOnly(true);
+            setLastStart(Math.floor(Date.now() / 1000));
         } else {
             await stopTimer();
-        }
 
-        setIsTimerRun((prev) => !prev)
+            setIsReadOnly(false);
+            setFormInput((prevFormInput) => ({
+                ...prevFormInput,
+                title: "", 
+            }));
+            reset();
+            localStorage.setItem(ACTIVE_TASK_KEY, null);
+            fetchTaskDetailHistory();
+            dispatch(setActiveTaskId(null));
+        }
     }
 
     const startTimer = async () => {
         try {
-            const formData = new FormData()   
-            formData.append('time', '00:00:00')
-            formData.append('status', 'start')
-            formData.append('title', formInput.title)
+            const formData = new FormData();
+            formData.append('time', '00:00:00');
+            formData.append('status', 'start');
+            formData.append('title', formInput.title);
 
-            const response = await DoPostTimer('timer/start', activeTaskId, formData)
-            setTimerId(response.data.id)
-            setIsReadOnly(true)
+            let timerTitleRedux = formInput.title;
+            dispatch(setTimerTitleRedux(timerTitleRedux));
+
+            let response = await DoPostTimer('timer/start', activeTaskId, formData);
+            let timerIdRedux = response.data.id;
+            
+            localStorage.setItem(
+                TIMER_DATA_KEY,
+                JSON.stringify({ timerIdRedux, timerTitleRedux})
+            );
+
+            return response;
         } catch(error) {
-            console.error(`Error Start Time ${error}`)
+            console.error(`Error Start Time ${error}`);
         }
     }
 
     const stopTimer = async () => {
         try {
-            const formData = new FormData()   
-            formData.append('time', formatTime(time))
-            formData.append('status', 'stop')
-            formData.append('title', formInput.title)
+            const formData = new FormData();
+            formData.append('time', formatTime(time));
+            formData.append('status', 'stop');
+            formData.append('title', formInput.title);
             
-            await DoUpdateTimer('timer/update', timerId, formData)
-            reset();
-            setIsReadOnly(false)
-            setFormInput((prevFormInput) => ({
-                ...prevFormInput,
-                title: "", 
-            }));
-            fetchTaskDetailHistory();
-            dispatch(setActiveTaskId(null));
+            await DoUpdateTimer('timer/update', timerId, formData);
         } catch(error) {
             console.error(`Error Stop Timer ${error}`)
         }

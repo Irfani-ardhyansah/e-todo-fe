@@ -42,7 +42,7 @@ const Sidebar = () => {
 
     useEffect(() => {
         const activeTaskIdStorage = localStorage.getItem(ACTIVE_TASK_KEY);
-        if(!activeTaskIdStorage) {
+        if (activeTaskIdStorage === null || activeTaskIdStorage === "null") {
             setActiveId(null)
         }
     }, [activeTaskId])
