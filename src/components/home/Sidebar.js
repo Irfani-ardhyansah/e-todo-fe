@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import './Sidebar.css'
-import useTaskService from "../../services/Task"
+import React, { useState, useEffect } from 'react';
+import './Sidebar.css';
+import useTaskService from "../../services/Task";
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux'
-import { setActiveTaskId } from '../../redux/sidebarSlice'
+import { useDispatch } from 'react-redux';
+import { setActiveTaskId } from '../../redux/sidebarSlice';
 
 const ACTIVE_TASK_KEY = "active_task"; 
 
 const Sidebar = () => {
-    const { GetTask } = useTaskService()
-    const [tasks, setTasks] = useState([])
-    const [isActiveId, setActiveId] = useState(null)
+    const { GetTask } = useTaskService();
+    const [tasks, setTasks] = useState([]);
+    const [isActiveId, setActiveId] = useState(null);
     const dispatch = useDispatch();
     const timerRunStatus = useSelector((state) => state.content.timerRunStatus); 
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
@@ -57,7 +57,6 @@ const Sidebar = () => {
         localStorage.setItem(ACTIVE_TASK_KEY, activeId);
         setActiveId(activeId)
         dispatch(setActiveTaskId(activeId))
-
     }
 
     return (
@@ -65,7 +64,7 @@ const Sidebar = () => {
             <div className="col-2">
                 <div className="card" style={{width: '15.9rem'}}>
                     <div className="card-header">
-                        <button className="btn-filter-sidebar" > Created </button>
+                        <button className="btn-filter-sidebar" > Task </button>
                     </div>
                     <ul className="list-group list-group-flush">
                         {tasks.map((item, index) => (

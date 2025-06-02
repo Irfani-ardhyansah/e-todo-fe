@@ -1,4 +1,16 @@
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setActiveModalTask } from '../../redux/headerSlice';
+
 const Header = () => {
+    const dispatch                  = useDispatch();
+    const [showModal, setShowModal] = useState(false);
+    
+    const handleCreate = (status) => {
+        setShowModal(status)
+        dispatch(setActiveModalTask(status))
+    }
+
     return (
         <>
             <div className="header-title d-flex justify-content-between align-items-center">
@@ -21,18 +33,18 @@ const Header = () => {
             <div className="header-filter mt-4 d-flex justify-content-between align-items-center">
                 <div className="left-side">
                     <input className="form-filter p-1 me-1" placeholder="Search..."/>
-                    <button className="btn btn-sm btn-filter me-1">Project</button>
-                    <button className="btn btn-sm btn-filter me-1">Type</button>
+                    <button className="btn btn-sm btn-filter me-1" onClick={() => handleCreate(true)}>Create</button>
+                    {/* <button className="btn btn-sm btn-filter me-1">Type</button>
                     <button className="btn btn-sm btn-filter me-1">Status</button>
                     <button className="btn btn-sm btn-filter me-1">Assignee</button>
-                    <button className="btn btn-sm btn-filter me-1">More</button>
+                    <button className="btn btn-sm btn-filter me-1">More</button> */}
                     |
                     <button type="button" className="btn btn-link">Filter</button>
                 </div>
-                <div className="right-side">
+                {/* <div className="right-side">
                     <button className="btn btn-sm btn-filter me-1">Basic</button>
                     <button className="btn btn-sm btn-filter me-1">JQL</button>
-                </div>
+                </div> */}
             </div>
         </>
     )

@@ -1,0 +1,162 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade Out */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: rgba(0, 0, 0, 0.6); */
+    background: rgb(70, 70, 70, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .modal-overlay.hide {
+    animation: fadeOut 0.3s ease-in forwards;
+  }
+  
+  .modal-box {
+    /* background: white; */
+    background: rgb(233, 233, 233);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+
+  /* .floating-form {
+    width: 300px;
+    margin: 2rem auto;
+  }
+  
+  .form-field {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  .form-field input {
+    width: 100%;
+    padding: 1rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    outline: none;
+    background: none;
+  }
+  
+  .form-field label {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    color: #888;
+    pointer-events: none;
+    transition: 0.2s ease all;
+    background-color: white;
+    padding: 0 0.25rem;
+  }
+  
+  .form-field input:focus + label,
+  .form-field input:not(:placeholder-shown) + label,
+  .form-field input:valid + label {
+    top: -0.6rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: #1976d2;
+  } */
+
+
+  .floating-form {
+    margin: 2rem auto;
+  }
+  
+  .form-field {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  .form-field input {
+    width: 100%;
+    padding: 1.2rem 0.75rem 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    outline: none;
+    background: none;
+  }
+  
+  .form-field label {
+    position: absolute;
+    left: 0.75rem;
+    top: 1.1rem;
+    color: #888;
+    /* background-color: inherit; */
+    background: rgb(233, 233, 233);
+    padding: 0 0.25rem;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    transform-origin: left top;
+  }
+  
+  /* Saat input aktif atau terisi */
+  .form-field input:focus + label,
+  .form-field.filled label {
+    top: -0.6rem;
+    font-size: 0.75rem;
+    color: #1976d2;
+  }
+
+  h2,
+  .ql-editor {
+    color: black; /* atau warna apapun yang lo mau */
+  }
+
+  .btn-submit {
+    color: #0052a3;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+  }
