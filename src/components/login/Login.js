@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import useAxiosInstance from '../../services/ApiClient';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../provider/authProvider";
-import useAuthService from "../../services/Login"
+import useAuthService from "../../services/useAuthService";
 import ToastContainerError from "../alerts/ToasContainerError";
 import { toast } from "react-toastify";
 

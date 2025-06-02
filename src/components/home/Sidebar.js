@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
-import useTaskService from "../../services/Task";
+import useTaskService from "../../services/useTaskService";
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setActiveTaskId } from '../../redux/sidebarSlice';
@@ -17,15 +17,15 @@ const Sidebar = () => {
 
     const getTaskData = async () => {
         try {
-            const taskResults = await GetTask()
-            setTasks(taskResults.data)
+            const taskResults = await GetTask('/tasks');
+            setTasks(taskResults.data);
         } catch(error) {
-            console.error('Error service task', error)
+            console.error('Error service task', error);
         }
     }
 
     useEffect(() => {
-        getTaskData()
+        getTaskData();
     }, [])
 
     useEffect(() => {
@@ -43,20 +43,20 @@ const Sidebar = () => {
     useEffect(() => {
         const activeTaskIdStorage = localStorage.getItem(ACTIVE_TASK_KEY);
         if (activeTaskIdStorage === null || activeTaskIdStorage === "null") {
-            setActiveId(null)
+            setActiveId(null);
         }
     }, [activeTaskId])
 
     const toggleClass = (id) => {
         if(timerRunStatus) {
-            alert("Timer Is Running, Cannot UnSelect Task, Finish Timer First!!!")
+            alert("Timer Is Running, Cannot UnSelect Task, Finish Timer First!!!");
             return
         }
         
         let activeId = isActiveId == id ? null : id
         localStorage.setItem(ACTIVE_TASK_KEY, activeId);
-        setActiveId(activeId)
-        dispatch(setActiveTaskId(activeId))
+        setActiveId(activeId);
+        dispatch(setActiveTaskId(activeId));
     }
 
     return (

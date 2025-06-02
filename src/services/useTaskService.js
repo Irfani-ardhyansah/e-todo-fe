@@ -3,9 +3,9 @@ import useAxiosInstance from "./ApiClient";
 const useTaskService = () => {
   const axiosInstance = useAxiosInstance();
 
-  const GetTask = async () => {
+  const GetTask = async (endpoint) => {
     try {
-      const response = await axiosInstance.get('/tasks');
+      const response = await axiosInstance.get(endpoint);
       return response.data;
     } catch (error) {
       console.error('Task service error:', error);

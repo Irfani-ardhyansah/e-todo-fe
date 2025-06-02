@@ -1,7 +1,6 @@
-// services/useLogin.js
 import useAxiosInstance from "./ApiClient";
 
-const useContentService = () => {
+const useTimerService = () => {
   const axiosInstance = useAxiosInstance();
 
   const DoPostTimer = async (endpoint, timerIdOrTaskId, data) => {
@@ -27,4 +26,4 @@ const useContentService = () => {
   return { DoPostTimer, DoUpdateTimer };
 };
 
-export default useContentService;
+export default useTimerService;

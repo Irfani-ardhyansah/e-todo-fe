@@ -3,9 +3,9 @@ import useAxiosInstance from "./ApiClient";
 const useTaskDetailHistoryService = () => {
   const axiosInstance = useAxiosInstance();
 
-  const GetTaskDetailHistory = async () => {
+  const GetTaskDetailHistory = async (endpoint) => {
     try {
-      const response = await axiosInstance.get('/timer/weekly-report');
+      const response = await axiosInstance.get(endpoint);
       return response.data;
     } catch (error) {
       console.error('Task Detail History service error:', error);

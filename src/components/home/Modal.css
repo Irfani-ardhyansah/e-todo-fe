@@ -118,7 +118,23 @@
     margin-bottom: 2rem;
   }
   
-  .form-field input {
+  .form-field select {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #aaa;
+    background: rgb(233, 233, 233);
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  
+  .form-field select:focus {
+    outline: none;
+    border-color: #888;
+    background: rgb(233, 233, 233);
+  }
+
+  .form-field input{
     width: 100%;
     padding: 1.2rem 0.75rem 0.5rem;
     font-size: 1rem;
@@ -133,7 +149,6 @@
     left: 0.75rem;
     top: 1.1rem;
     color: #888;
-    /* background-color: inherit; */
     background: rgb(233, 233, 233);
     padding: 0 0.25rem;
     pointer-events: none;
@@ -149,6 +164,14 @@
     color: #1976d2;
   }
 
+  .form-field.filled label,
+  .form-field select:focus + label {
+    top: -8px;
+    left: 12px;
+    font-size: 12px;
+    color: #1976d2;
+  }
+
   h2,
   .ql-editor {
     color: black; /* atau warna apapun yang lo mau */
@@ -159,4 +182,20 @@
     border: none;
     padding: 10px;
     border-radius: 5px;
+  }
+
+  .d-flex {
+    display: flex !important;
+  }
+
+  .justify-content-between {
+    justify-content: space-between;
+  }
+
+  .w-50 {
+    width: 49.5% !important;
+  }
+
+  .w-75 {
+    width: 75% !important;
   }
