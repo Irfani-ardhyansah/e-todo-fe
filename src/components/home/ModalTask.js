@@ -4,11 +4,14 @@ import './Modal.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { setActiveModalTask } from '../../redux/headerSlice';
+import { triggerRefreshTask } from '../../redux/sidebarSlice';
+import useTaskService from '../../services/useTaskService';
 
 const ModalTask = () => {
     const dispatch = useDispatch();
+    const { DoPostTask} = useTaskService();
     const [formInputTask, setFormInputTask] = useState({
-        title: "",
+        name: "",
         description: "",
         code: "",
         status: "",
@@ -25,12 +28,34 @@ const ModalTask = () => {
         setFormInputTask((prev) => ({ ...prev, description: val }));
     }, []);
 
-    const handleCloseModalTask = (status) => {
+    const handleCloseModalTask = () => {
         setIsClosing(true);
         setTimeout(() => {
             dispatch(setActiveModalTask(false));
             setIsClosing(false);
         }, 300);
+    }
+
+    const handleSaveTask = async (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            formData.append('name', formInputTask.name);
+            formData.append('status', formInputTask.status);
+            formData.append('description', formInputTask.description);
+            formData.append('code', formInputTask.code);
+
+            let response = await DoPostTask('task', formData);
+            if(response.code == 200) {
+                console.log(response)
+                handleCloseModalTask()
+                dispatch(triggerRefreshTask());
+            } else {
+                console.log(response.code)
+            }
+        } catch(error) {
+            console.error(`Error Save Task ${error}`);
+        }
     }
     
     return (
@@ -40,13 +65,13 @@ const ModalTask = () => {
                     <div className="modal-box">
                         <div className="modal-header">
                             <h2>Form Task</h2>
-                            <button onClick={() => handleCloseModalTask(false)}>X</button>
+                            <button onClick={() => handleCloseModalTask()}>X</button>
                         </div>
                         <form className="floating-form">
-                            <div className={`form-field ${formInputTask.title ? 'filled' : ''}`}>
+                            <div className={`form-field ${formInputTask.name ? 'filled' : ''}`}>
                                 <input
-                                name="title"
-                                value={formInputTask.title}
+                                name="name"
+                                value={formInputTask.name}
                                 onChange={handleChangeTask}
                                 required
                                 />
@@ -71,7 +96,7 @@ const ModalTask = () => {
                                         required
                                     >
                                         <option value="" disabled hidden>
-                                        Pilih Status
+                                        Pilih 
                                         </option>
                                         <option value="open">Open</option>
                                         <option value="closed">Closed</option>
@@ -93,8 +118,7 @@ const ModalTask = () => {
                             </div>
 
                             <div className="actions">
-                                {/* <button type="button" onClick={() => setShow(false)}>Cancel</button> */}
-                                <button className="btn-submit" type="submit">Submit</button>
+                                <button type="button" className="btn-submit" onClick={handleSaveTask}>Submit</button>
                             </div>
                         </form>
                     </div>

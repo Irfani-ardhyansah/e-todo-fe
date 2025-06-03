@@ -13,7 +13,17 @@ const useTaskService = () => {
     }
   };
 
-  return { GetTask };
+  const DoPostTask = async (endpoint, data) => {
+    try {
+      const response = await axiosInstance.post(endpoint, data);
+      return response.data;
+    } catch (error) {
+      console.error('doPostTask service error:', error);
+      throw error;
+    }
+  };
+
+  return { GetTask, DoPostTask };
 };
 
 export default useTaskService;

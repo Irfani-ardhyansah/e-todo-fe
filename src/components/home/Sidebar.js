@@ -3,7 +3,7 @@ import './Sidebar.css';
 import useTaskService from "../../services/useTaskService";
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { setActiveTaskId } from '../../redux/sidebarSlice';
+import { clearRefreshTask, setActiveTaskId } from '../../redux/sidebarSlice';
 
 const ACTIVE_TASK_KEY = "active_task"; 
 
@@ -14,10 +14,11 @@ const Sidebar = () => {
     const dispatch = useDispatch();
     const timerRunStatus = useSelector((state) => state.content.timerRunStatus); 
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
+    const shouldRefresh = useSelector((state) => state.sidebar.shouldRefreshTask)
 
     const getTaskData = async () => {
         try {
-            const taskResults = await GetTask('/tasks');
+            const taskResults = await GetTask('tasks');
             setTasks(taskResults.data);
         } catch(error) {
             console.error('Error service task', error);
@@ -27,6 +28,14 @@ const Sidebar = () => {
     useEffect(() => {
         getTaskData();
     }, [])
+
+    useEffect(() => {
+        if(shouldRefresh) {
+            console.log('trigger ', shouldRefresh);
+            getTaskData();
+            dispatch(clearRefreshTask());
+        }
+    }, [shouldRefresh])
 
     useEffect(() => {
         if (tasks.length > 0) {
