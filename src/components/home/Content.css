@@ -48,8 +48,25 @@
 .content-header>h4 {
     font-weight: 900;
 }
+.content-sub-title {
+    display: flex;
+    align-items: center;
+}
 .title-code {
+    margin-left: 5px;
     font-size: 13px; 
     margin-bottom: 0 !important;
 }
 
+.status-icon.open {
+    color: #3498db;
+}
+.status-icon.closed {
+color: #e74c3c;
+}
+.status-icon.in_progress {
+color: #f1c40f;
+}
+.status-icon.finished {
+color: #2ecc71;
+}

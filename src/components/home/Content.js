@@ -16,6 +16,15 @@ import useTimer from '../../hooks/useTimer';
 import TaskHistoryList from './TaskHistoryList';
 import useTaskService from '../../services/useTaskService';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faDoorOpen,
+    faCheckCircle,
+    faTimesCircle,
+    faHourglassHalf,
+    faSpinner
+} from '@fortawesome/free-solid-svg-icons';
+
 const ACTIVE_TASK_KEY = "active_task"; 
 const TIMER_DATA_KEY = 'stopwatch_data_state';
 
@@ -64,6 +73,14 @@ const Content = () => {
         } catch(error) {
             console.error('Failed to fetch task history:', error);
         }
+    };
+
+    const statusIconMap = {
+        'open': faDoorOpen,
+        'in_review': faSpinner,
+        'closed': faTimesCircle,
+        'in_progress': faHourglassHalf,
+        'finished': faCheckCircle
     };
 
     const fetchTaskDetail = async () => {
@@ -157,7 +174,16 @@ const Content = () => {
                 {activeTaskId && taskDetail &&  
                 <>
                     <div className="content-header">
-                        <p className="title-code">{taskDetail.code}</p>
+                        <div className="content-sub-title">
+                            <FontAwesomeIcon
+                                icon={statusIconMap[taskDetail.status?.toLowerCase()] || faSpinner}
+                                className={`status-icon ${taskDetail.status}`}
+                                title={taskDetail.status}
+                            />
+                            <p className="title-code">
+                                {taskDetail.code}
+                            </p>
+                        </div>
                         <h4>{taskDetail.name}</h4>
                     </div>
 

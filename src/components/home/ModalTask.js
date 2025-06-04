@@ -100,8 +100,8 @@ const ModalTask = () => {
                                         </option>
                                         <option value="open">Open</option>
                                         <option value="closed">Closed</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="archived">Archived</option>
+                                        <option value="finished">Finished</option>
+                                        <option value="in_progress">In Progress</option>
                                     </select>
                                     <label>Status</label>
                                 </div>
