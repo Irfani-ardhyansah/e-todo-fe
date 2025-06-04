@@ -43,3 +43,13 @@
 .timer-history-content > .right-side {
     font-size: 10px;
 }
+
+/* Content */
+.content-header>h4 {
+    font-weight: 900;
+}
+.title-code {
+    font-size: 13px; 
+    margin-bottom: 0 !important;
+}
+

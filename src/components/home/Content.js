@@ -14,6 +14,7 @@ import useTimerService from '../../services/useTimerService';
 import useTaskDetailHistoryService from "../../services/useTaskDetailHistoryService"
 import useTimer from '../../hooks/useTimer';
 import TaskHistoryList from './TaskHistoryList';
+import useTaskService from '../../services/useTaskService';
 
 const ACTIVE_TASK_KEY = "active_task"; 
 const TIMER_DATA_KEY = 'stopwatch_data_state';
@@ -23,6 +24,7 @@ const Content = () => {
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
 
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
+    const { GetTaskDetail } = useTaskService();
     const { GetTaskDetailHistory } = useTaskDetailHistoryService();
 
     const [taskDetailHistories, setTaskDetailHistories] = useState([]);
@@ -33,6 +35,8 @@ const Content = () => {
     const [isReadOnly, setIsReadOnly] = useState(false);
 
     const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
+
+    const [taskDetail, setTaskDetail] = useState(null);
 
     useEffect(() => {
         fetchTaskDetailHistory();
@@ -45,6 +49,12 @@ const Content = () => {
             }));
         }
     }, [])
+
+    useEffect(() => {
+        if(activeTaskId) {
+            fetchTaskDetail();
+        }
+    }, [activeTaskId])
     
     const fetchTaskDetailHistory = async () => {
         try {
@@ -55,6 +65,15 @@ const Content = () => {
             console.error('Failed to fetch task history:', error);
         }
     };
+
+    const fetchTaskDetail = async () => {
+        try {
+            const result = await GetTaskDetail('/task', activeTaskId);
+            setTaskDetail(result.data);
+        } catch(error) {
+            console.error('Failed to fetch task DEtail :', error);
+        }
+    }
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -132,8 +151,24 @@ const Content = () => {
         <>
             <div className="row mt-4">
                 <Sidebar />
+
                 <div className="col-6">
-                    CONTENT
+
+                {activeTaskId && taskDetail &&  
+                <>
+                    <div className="content-header">
+                        <p className="title-code">{taskDetail.code}</p>
+                        <h4>{taskDetail.name}</h4>
+                    </div>
+
+                    <div className="content">
+                        <b>Description</b>
+                        <div
+                        dangerouslySetInnerHTML={{ __html: taskDetail.description }}
+                        ></div>
+                    </div>
+                </>
+                }
                 </div>
 
                 <ModalTask />
