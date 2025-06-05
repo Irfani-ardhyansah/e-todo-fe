@@ -7,6 +7,7 @@ import { setTimerIdRedux, setTimerTitleRedux } from '../../redux/contentSlice'
 import Sidebar from './Sidebar';
 import './Content.css';
 import ModalTask from './ModalTask';
+import TaskDetail from './TaskDetail';
 
 import { setActiveTaskId } from '../../redux/sidebarSlice'
 
@@ -15,15 +16,6 @@ import useTaskDetailHistoryService from "../../services/useTaskDetailHistoryServ
 import useTimer from '../../hooks/useTimer';
 import TaskHistoryList from './TaskHistoryList';
 import useTaskService from '../../services/useTaskService';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faDoorOpen,
-    faCheckCircle,
-    faTimesCircle,
-    faHourglassHalf,
-    faSpinner
-} from '@fortawesome/free-solid-svg-icons';
 
 const ACTIVE_TASK_KEY = "active_task"; 
 const TIMER_DATA_KEY = 'stopwatch_data_state';
@@ -73,14 +65,6 @@ const Content = () => {
         } catch(error) {
             console.error('Failed to fetch task history:', error);
         }
-    };
-
-    const statusIconMap = {
-        'open': faDoorOpen,
-        'in_review': faSpinner,
-        'closed': faTimesCircle,
-        'in_progress': faHourglassHalf,
-        'finished': faCheckCircle
     };
 
     const fetchTaskDetail = async () => {
@@ -171,42 +155,37 @@ const Content = () => {
 
                 <div className="col-6">
 
-                {activeTaskId && taskDetail &&  
-                <>
-                    <div className="content-header">
-                        <div className="content-sub-title">
-                            <FontAwesomeIcon
-                                icon={statusIconMap[taskDetail.status?.toLowerCase()] || faSpinner}
-                                className={`status-icon ${taskDetail.status}`}
-                                title={taskDetail.status}
-                            />
-                            <p className="title-code">
-                                {taskDetail.code}
-                            </p>
-                        </div>
-                        <h4>{taskDetail.name}</h4>
-                    </div>
-
-                    <div className="content">
-                        <b>Description</b>
-                        <div
-                        dangerouslySetInnerHTML={{ __html: taskDetail.description }}
-                        ></div>
-                    </div>
-                </>
-                }
+                    {activeTaskId && taskDetail &&  
+                        <>
+                            <TaskDetail taskDetail={taskDetail} />
+                        </>
+                    }
                 </div>
 
                 <ModalTask />
 
                 <div className="col-4">
                     <div className="filter-section">
-                        <button className="btn btn-sm btn-filter me-1">To Do</button>
+                        <div className="custom-select-wrapper">
+                            <select
+                                className={`select-filter ${taskDetail?.status || ''}`}
+                                name="status"
+                                value={taskDetail?.status || ''}
+                            >
+                                <option value="" disabled hidden>Pilih</option>
+                                <option value="open">Open</option>
+                                <option value="closed">Closed</option>
+                                <option value="finished">Finished</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="in_review">In Review</option>
+                            </select>
+                            <span className="custom-arrow">&#9662;</span> {/* Unicode ▼ */}
+                        </div>
                     </div>
                     <div className="content-section mt-2">
                         <div className="card">
                             <div className="card-header timer-header">
-                                <button className="btn-filter-sidebar" > Details </button>
+                                <button className="btn-filter-sidebar" > Timers </button>
                             </div>
                             <ul className="list-group list-group-flush timer-group">
                                 <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >

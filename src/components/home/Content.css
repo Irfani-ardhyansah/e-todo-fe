@@ -62,11 +62,59 @@
     color: #3498db;
 }
 .status-icon.closed {
-color: #e74c3c;
+    color: #e74c3c;
 }
 .status-icon.in_progress {
-color: #f1c40f;
+    color: #f1c40f;
 }
 .status-icon.finished {
-color: #2ecc71;
+    color: #2ecc71;
+}
+.status-icon.in_review {
+    color: #9b59b6;
+}
+
+.select-filter.open {
+    background-color: #3498db;
+}
+.select-filter.closed {
+    background-color: #e74c3c;
+}
+.select-filter.in_progress {
+    background-color: #f1c40f;
+    color: rgb(44, 44, 44);
+}
+.select-filter.finished {
+    background-color: #2ecc71;
+    color: rgb(44, 44, 44);
+}
+.select-filter.in_review {
+    background-color: #9b59b6;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 24%;
+}
+
+.select-filter {
+    width: 100%;
+    padding: 5px;
+    color: white;
+    border: none;
+    background: #3d3d3d;
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.custom-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none; /* Allow click-through to select */
+    color: #555;
+    font-size: 0.8rem;
 }

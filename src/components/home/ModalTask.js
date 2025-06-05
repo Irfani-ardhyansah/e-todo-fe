@@ -10,12 +10,13 @@ import useTaskService from '../../services/useTaskService';
 const ModalTask = () => {
     const dispatch = useDispatch();
     const { DoPostTask} = useTaskService();
-    const [formInputTask, setFormInputTask] = useState({
+    const initialFormState = {
         name: "",
         description: "",
         code: "",
         status: "",
-    });
+    };
+    const [formInputTask, setFormInputTask] = useState(initialFormState);
     const [isClosing, setIsClosing] = useState(false);
     const activeModalTask = useSelector((state) => state.header.activeModalTask); 
 
@@ -47,9 +48,11 @@ const ModalTask = () => {
 
             let response = await DoPostTask('task', formData);
             if(response.code == 200) {
-                console.log(response)
-                handleCloseModalTask()
+                handleCloseModalTask();
                 dispatch(triggerRefreshTask());
+                setTimeout(() => {
+                    setFormInputTask(initialFormState);
+                }, 300);
             } else {
                 console.log(response.code)
             }

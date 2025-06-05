@@ -5,6 +5,15 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { clearRefreshTask, setActiveTaskId } from '../../redux/sidebarSlice';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faDoorOpen,
+    faCheckCircle,
+    faTimesCircle,
+    faHourglassHalf,
+    faSpinner
+} from '@fortawesome/free-solid-svg-icons';
+
 const ACTIVE_TASK_KEY = "active_task"; 
 
 const Sidebar = () => {
@@ -24,6 +33,14 @@ const Sidebar = () => {
             console.error('Error service task', error);
         }
     }
+
+    const statusIconMap = {
+        'open': faDoorOpen,
+        'in_review': faSpinner,
+        'closed': faTimesCircle,
+        'in_progress': faHourglassHalf,
+        'finished': faCheckCircle
+    };
 
     useEffect(() => {
         getTaskData();
@@ -83,11 +100,18 @@ const Sidebar = () => {
                                 onClick={() => toggleClass(item.id)}
                                 >
                                 <div className="content-top mb-2">
-                                    {item.name}
+                                    <b>{item.name}</b>
                                 </div>
                                 <div className="content-bottom d-flex justify-content-between mb-2">
                                     <div className="left-side">
-                                        {item.code}
+                                        <FontAwesomeIcon
+                                            icon={statusIconMap[item.status?.toLowerCase()] || faSpinner}
+                                            className={`status-icon ${item.status}`}
+                                            title={item.status}
+                                        />
+                                        <div className="ms-1">
+                                            {item.code}
+                                        </div>
                                     </div>
                                     <div className="right-side">
                                         IM

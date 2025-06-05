@@ -33,7 +33,7 @@
 
 .list-group {
     overflow-y: auto;
-    max-height: 60vh;
+    max-height: 65vh;
 }
 
 .list-group-item {
@@ -63,7 +63,10 @@
 
 .left-side {
     font-size: 13px;
-    font-weight: bold;
+    /* font-weight: bold; */
+
+    display: flex; 
+    align-items: center;
 }
 
 .right-side {
