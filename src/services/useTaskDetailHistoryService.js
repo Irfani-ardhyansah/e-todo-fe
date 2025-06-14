@@ -13,7 +13,17 @@ const useTaskDetailHistoryService = () => {
     }
   };
 
-  return { GetTaskDetailHistory };
+  const GetTaskDetailHistoryByTaskId = async (endpoint, id) => {
+    try {
+      const response = await axiosInstance.get(`${endpoint}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Task Detail History service error:', error);
+      throw error;
+    }
+  };
+
+  return { GetTaskDetailHistory, GetTaskDetailHistoryByTaskId };
 };
 
 export default useTaskDetailHistoryService;

@@ -26,7 +26,7 @@ const Content = () => {
 
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
     const { GetTaskDetail } = useTaskService();
-    const { GetTaskDetailHistory } = useTaskDetailHistoryService();
+    const { GetTaskDetailHistory, GetTaskDetailHistoryByTaskId } = useTaskDetailHistoryService();
 
     const [taskDetailHistories, setTaskDetailHistories] = useState([]);
     const [formInput, setFormInput] = useState({
@@ -54,12 +54,31 @@ const Content = () => {
     useEffect(() => {
         if(activeTaskId) {
             fetchTaskDetail();
+            fetchTaskDetailHistoryByTaskId();
+        } else {
+            fetchTaskDetailHistory();
         }
     }, [activeTaskId])
     
     const fetchTaskDetailHistory = async () => {
         try {
             const result = await GetTaskDetailHistory('/timer/weekly-report');
+            const updated = result.data.map((item) => ({ ...item, uuid: uuidv4() }));
+            setTaskDetailHistories(updated);
+        } catch(error) {
+            console.error('Failed to fetch task history:', error);
+        }
+    };
+
+    const fetchTaskDetailHistoryByTaskId = async () => {
+        try {
+            const result = await GetTaskDetailHistoryByTaskId('/timer/weekly-report', activeTaskId);
+            
+            if (!result || !Array.isArray(result.data)) {
+                setTaskDetailHistories([]); 
+                return;
+            }
+
             const updated = result.data.map((item) => ({ ...item, uuid: uuidv4() }));
             setTaskDetailHistories(updated);
         } catch(error) {
@@ -152,9 +171,7 @@ const Content = () => {
         <>
             <div className="row mt-4">
                 <Sidebar />
-
                 <div className="col-6">
-
                     {activeTaskId && taskDetail &&  
                         <>
                             <TaskDetail taskDetail={taskDetail} />
@@ -165,54 +182,67 @@ const Content = () => {
                 <ModalTask />
 
                 <div className="col-4">
-                    <div className="filter-section">
-                        <div className="custom-select-wrapper">
-                            <select
-                                className={`select-filter ${taskDetail?.status || ''}`}
-                                name="status"
-                                value={taskDetail?.status || ''}
-                            >
-                                <option value="" disabled hidden>Pilih</option>
-                                <option value="open">Open</option>
-                                <option value="closed">Closed</option>
-                                <option value="finished">Finished</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="in_review">In Review</option>
-                            </select>
-                            <span className="custom-arrow">&#9662;</span> {/* Unicode ▼ */}
-                        </div>
-                    </div>
-                    <div className="content-section mt-2">
-                        <div className="card">
-                            <div className="card-header timer-header">
-                                <button className="btn-filter-sidebar" > Timers </button>
+
+                {activeTaskId && taskDetail &&  
+                    <>
+                        <div className="filter-section">
+                            <div className="custom-select-wrapper">
+                                <select
+                                    className={`select-filter ${taskDetail?.status || ''}`}
+                                    name="status"
+                                    value={taskDetail?.status || ''}
+                                >
+                                    <option value="" disabled hidden>Pilih</option>
+                                    <option value="open">Open</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="finished">Finished</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="in_review">In Review</option>
+                                </select>
+                                <span className="custom-arrow">&#9662;</span>
                             </div>
-                            <ul className="list-group list-group-flush timer-group">
-                                <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
-                                    <div className="left-side">
-                                        <input 
-                                                className="timer-title" 
-                                                name="title" 
-                                                value={formInput.title}
-                                                onChange={handleChange}
-                                                placeholder="What are you working on ?"
-                                                readOnly={isReadOnly} />
-                                    </div>
-                                    <div className="right-side d-flex align-items-center">
-                                        <div className="timer me-3">
-                                            {formatTime(time)}
-                                        </div>
-
-                                        <button className="btn-action" onClick={toggleTimer}>
-                                            {isTimerRun ? "Stop" : "Start"}
-                                        </button>
-
-                                    </div>
-                                </li>
-                                <TaskHistoryList histories={taskDetailHistories} />
-                            </ul>
                         </div>
-                    </div>
+                    </>
+                }
+                        <div className="content-section mt-2">
+                            <div className="card">
+                                {activeTaskId && taskDetail &&  
+                                    <>
+                                        <div className="card-header timer-header">
+                                            <button className="btn-filter-sidebar" > Timers </button>
+                                        </div>
+                                    </>
+                                }
+                                <ul className="list-group list-group-flush timer-group">
+                                    {activeTaskId && taskDetail &&  
+                                        <>
+                                        <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
+                                            <div className="left-side">
+                                                <input 
+                                                        className="timer-title" 
+                                                        name="title" 
+                                                        value={formInput.title}
+                                                        onChange={handleChange}
+                                                        placeholder="What are you working on ?"
+                                                        readOnly={isReadOnly} />
+                                            </div>
+                                            <div className="right-side d-flex align-items-center">
+                                                <div className="timer me-3">
+                                                    {formatTime(time)}
+                                                </div>
+
+                                                <button className="btn-action" onClick={toggleTimer}>
+                                                    {isTimerRun ? "Stop" : "Start"}
+                                                </button>
+
+                                            </div>
+                                        </li>
+                                        </>
+                                    }
+                                    <TaskHistoryList histories={taskDetailHistories} />
+                                </ul>
+                            </div>
+                        </div>
                 </div>
             </div>
         </>
