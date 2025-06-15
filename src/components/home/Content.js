@@ -17,6 +17,8 @@ import useTimer from '../../hooks/useTimer';
 import TaskHistoryList from './TaskHistoryList';
 import useTaskService from '../../services/useTaskService';
 
+import ReactQuill from 'react-quill';
+
 const ACTIVE_TASK_KEY = "active_task"; 
 const TIMER_DATA_KEY = 'stopwatch_data_state';
 
@@ -27,17 +29,15 @@ const Content = () => {
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
     const { GetTaskDetail } = useTaskService();
     const { GetTaskDetailHistory, GetTaskDetailHistoryByTaskId } = useTaskDetailHistoryService();
+    const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
 
     const [taskDetailHistories, setTaskDetailHistories] = useState([]);
     const [formInput, setFormInput] = useState({
             title: "",
         });
-
     const [isReadOnly, setIsReadOnly] = useState(false);
-
-    const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
-
     const [taskDetail, setTaskDetail] = useState(null);
+    const [isFormCommentActive, setFormCommentActive] = useState(false);
 
     useEffect(() => {
         fetchTaskDetailHistory();
@@ -167,6 +167,12 @@ const Content = () => {
         }
     }
 
+    const handleBlur = () => {
+        // if (comment.trim() === "") {
+            setFormCommentActive(false);
+        // }
+    };
+
     return (
         <>
             <div className="row mt-4">
@@ -175,6 +181,28 @@ const Content = () => {
                     {activeTaskId && taskDetail &&  
                         <>
                             <TaskDetail taskDetail={taskDetail} />
+
+                            <div className="task-comment-section">
+                                <div className="form-comment-field"> 
+                                    {
+                                        isFormCommentActive ? (
+                                            <ReactQuill
+                                                onBlur={handleBlur}
+                                                theme="snow"
+                                                placeholder="Add a comment..."
+                                                className="form-comment-input"
+                                            />
+                                        ) : (
+                                            <input 
+                                            onFocus={() => setFormCommentActive(true)}
+                                            className="form-comment-default p-1 me-1" 
+                                            placeholder="Add a comment..."
+                                            readOnly
+                                        />
+                                        )
+                                    }
+                                </div>
+                            </div>
                         </>
                     }
                 </div>

@@ -118,3 +118,61 @@
     color: #555;
     font-size: 0.8rem;
 }
+
+.content-task-detail-section {
+    max-height: 50vh;    
+    overflow-y: auto;
+    padding-right: 8px; 
+    scrollbar-gutter: stable;
+}
+
+/* Comment Section */
+.form-comment-default {
+    width: 100%;
+    height: 7vh;
+    background-color: #1e1e1e;
+    border-radius: 1px;
+    border: 0.5px solid rgb(209, 208, 208);
+}
+
+/* quill  */
+    .form-comment-input .ql-editor {
+        color: white !important;  
+    }
+
+    .form-comment-input .ql-editor {
+        color: white;
+        background-color: #1e1e1e; /* optional */
+    }
+    
+    /* Ganti warna placeholder */
+    .form-comment-input .ql-editor.ql-blank::before {
+        color: #aaa !important;
+    }
+    
+    /* Ganti warna ikon toolbar */
+    .form-comment-input .ql-toolbar {
+        background-color: #1e1e1e;
+        border-color: #444;
+        color: white;
+    }
+    
+    .form-comment-input .ql-toolbar button,
+    .form-comment-input .ql-toolbar .ql-picker {
+        color: white !important;
+        fill: #1e1e1e !important;
+    }
+    
+    /* Untuk dropdown 'Normal', dll */
+    .form-comment-input .ql-picker-label {
+        color: white !important;
+    }
+    .form-comment-input .ql-picker-options {
+        background-color: #2a2a2a;
+        color: white;
+    }
+    .form-comment-input .ql-formats {
+        color: white;
+    }
+
+  /* end quill */
