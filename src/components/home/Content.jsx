@@ -46,6 +46,10 @@ const Content = () => {
     const [isFormCommentActive, setFormCommentActive] = useState(false);
     const [comments, setComment] = useState([]);
 
+    const [formComment, setFormComment] = useState({
+        comment: "",
+    });
+
     useEffect(() => {
         fetchTaskDetailHistory();
 

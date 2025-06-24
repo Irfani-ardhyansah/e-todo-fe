@@ -13,7 +13,7 @@ const initialValues = {
 };
 
 const Login = () => {
-    const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useAuth();
+    const { accessToken, setAccessToken, refreshToken, setRefreshToken, userData, setUserData } = useAuth();
     const navigate = useNavigate();
     const { DoLogin } = useAuthService();
 
@@ -22,10 +22,10 @@ const Login = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setValues({
-          ...values,
-          [name]: value,
+            ...values,
+            [name]: value,
         });
-      };
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -36,17 +36,14 @@ const Login = () => {
             formData.append("password", values.password)
             const result = await DoLogin(formData)
 
-            console.log('result', result)
-            // const result = await axiosInstance.post('/user/login', formData)
             if(result.code == 200) {
                 setRefreshToken(result.data.refresh_token)
                 setAccessToken(result.data.access_token)
-
+                setUserData(result.data)
                 navigate('/');
             }
         } catch(error) {
-            showErrorToast(error.response.data.data)
-            console.error('error Login', error.response.data.data)
+            console.error('error Login', error)
         }
     }
 

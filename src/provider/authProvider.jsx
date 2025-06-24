@@ -1,10 +1,10 @@
 import axios from "axios";
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from "react";
 
 const AuthContext = createContext();
@@ -12,6 +12,7 @@ const AuthContext = createContext();
 const AuthProvider = ({children}) => {
     const [accessToken, setAccessToken_] = useState(localStorage.getItem("accessToken"))
     const [refreshToken, setRefreshToken_] = useState(localStorage.getItem("refreshToken"))
+    const [userData, setUserData_] = useState(localStorage.getItem("dataUser") ? JSON.parse(localStorage.getItem("dataUser")) : null)
 
     const setAccessToken = (newAccessToken) => {
         setAccessToken_(newAccessToken)
@@ -19,6 +20,10 @@ const AuthProvider = ({children}) => {
 
     const setRefreshToken = (newRefreshToken) => {
         setRefreshToken_(newRefreshToken)
+    }
+
+    const setUserData = (newDataUser) => {
+        setUserData_(newDataUser)
     }
 
     useEffect(() => {
@@ -45,6 +50,8 @@ const AuthProvider = ({children}) => {
             setAccessToken,
             refreshToken,
             setRefreshToken,
+            userData,
+            setUserData,
         }),
         [accessToken]
     )
