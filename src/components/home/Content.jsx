@@ -8,6 +8,8 @@ import Sidebar from './Sidebar';
 import './Content.css';
 import ModalTask from './ModalTask';
 import TaskDetail from './TaskDetail';
+import Comment from './Comment';
+import Avatar from "../Avatar";
 
 import { setActiveTaskId } from '../../redux/sidebarSlice'
 
@@ -173,6 +175,33 @@ const Content = () => {
         // }
     };
 
+    const commentsData = [
+    {
+        id: 1,
+        name: "Rachmat Fajarudin",
+        created_at: "2025-06-16 06:17:35",
+        message: "Sorry for the late response.",
+        comments: [
+            {
+                id: 2,
+                name: "Luciano Pietrantonio",
+                created_at: "2025-06-16 06:17:35",
+                message: "No problem! Thanks for updating.",
+                comments: [
+                {
+                    id: 3,
+                    name: "Andi Rian",
+                    created_at: "2025-06-16 06:17:35",
+                    message: "Same issue here!",
+                    comments: [],
+                },
+                ],
+            },
+        ],
+    },
+    ];
+
+
     return (
         <>
             <div className="row mt-4">
@@ -186,21 +215,47 @@ const Content = () => {
                                 <div className="form-comment-field"> 
                                     {
                                         isFormCommentActive ? (
-                                            <ReactQuill
-                                                onBlur={handleBlur}
-                                                theme="snow"
-                                                placeholder="Add a comment..."
-                                                className="form-comment-input"
-                                            />
+                                            <>
+                                                <div className="d-flex align-items-center">
+                                                    <Avatar name="Mochamad Irfani" />
+                                                    <ReactQuill
+                                                        theme="snow"
+                                                        placeholder="Add a comment..."
+                                                        className="form-comment-input"
+                                                    />
+                                                </div>
+                                                <div className="container-button-comment">
+                                                    <button className="btn-save-comment">
+                                                        Save
+                                                    </button>
+
+                                                    <button 
+                                                        onClick={() => setFormCommentActive(false)}
+                                                        className="btn-cancel-comment">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </>
                                         ) : (
-                                            <input 
-                                            onFocus={() => setFormCommentActive(true)}
-                                            className="form-comment-default p-1 me-1" 
-                                            placeholder="Add a comment..."
-                                            readOnly
-                                        />
+                                            <>
+                                            <div className="d-flex align-items-center">
+                                                <Avatar name="Mochamad Irfani" />
+                                                <input 
+                                                    onFocus={() => setFormCommentActive(true)}
+                                                    className="form-comment-default p-1 me-1" 
+                                                    placeholder="Add a comment..."
+                                                    readOnly
+                                                />
+                                            </div>
+                                        </>
                                         )
                                     }
+                                </div>
+
+                                <div className="form-comment">
+                                        {commentsData.map((comment) => (
+                                            <Comment key={comment.id} comment={comment} />
+                                        ))}
                                 </div>
                             </div>
                         </>

@@ -1,0 +1,63 @@
+.comment {
+    display: flex;
+    margin-bottom: 16px;
+  }
+  
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  
+  .comment-content {
+    font-size: 14px;
+  }
+  
+  .comment-name {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .comment-time {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+  
+  .comment-message {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-line; /* agar newline di message terlihat */
+  }
+  
+  .comment-actions {
+    display: flex;
+    gap: 12px;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .comment-actions svg {
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .comment-actions svg:hover {
+    color: #fff;
+  }
+  
+  .comment-replies {
+    margin-top: 12px;
+  }
+  
