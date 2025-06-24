@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, act } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
 import { setTimerIdRedux, setTimerTitleRedux } from '../../redux/contentSlice'
+import { useAuth } from "../../provider/authProvider";
 
 import Sidebar from './Sidebar';
 import './Content.css';
@@ -28,6 +29,7 @@ const TIMER_DATA_KEY = 'stopwatch_data_state';
 
 const Content = () => {
     const dispatch = useDispatch();
+    const { userData } = useAuth();
     const activeTaskId = useSelector((state) => state.sidebar.activeTaskId); 
 
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
@@ -47,7 +49,7 @@ const Content = () => {
     const [comments, setComment] = useState([]);
 
     const [formComment, setFormComment] = useState({
-        comment: "",
+        message: "",
     });
 
     useEffect(() => {
@@ -196,11 +198,30 @@ const Content = () => {
         }
     }
 
-    const handleBlur = () => {
-        // if (comment.trim() === "") {
-            setFormCommentActive(false);
-        // }
-    };
+    const handleCommentChange = useCallback((val) => {
+        setFormComment((prev) => ({ ...prev, message: val }));
+    }, []);
+
+    const handleSaveComment = async (e) => {
+        e.preventDefault();
+        try {
+            const formData = {
+                user_id: userData.id,
+                task_id: activeTaskId,
+                parent_id: null, 
+                comment: formComment.message
+            };
+
+            let response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
+            if(response.code == 200) {
+                fetchComments();
+            } else {
+                console.log(response.code)
+            }
+        } catch(error) {
+            console.error(`Error Save Task ${error}`);
+        }
+    }
 
     return (
         <>
@@ -221,11 +242,15 @@ const Content = () => {
                                                     <ReactQuill
                                                         theme="snow"
                                                         placeholder="Add a comment..."
+                                                        onChange={handleCommentChange}
+                                                        value={formComment.message}
                                                         className="form-comment-input"
                                                     />
                                                 </div>
                                                 <div className="container-button-comment">
-                                                    <button className="btn-save-comment">
+                                                    <button 
+                                                        onClick={handleSaveComment}
+                                                        className="btn-save-comment">
                                                         Save
                                                     </button>
 

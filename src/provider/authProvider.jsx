@@ -12,7 +12,16 @@ const AuthContext = createContext();
 const AuthProvider = ({children}) => {
     const [accessToken, setAccessToken_] = useState(localStorage.getItem("accessToken"))
     const [refreshToken, setRefreshToken_] = useState(localStorage.getItem("refreshToken"))
-    const [userData, setUserData_] = useState(localStorage.getItem("dataUser") ? JSON.parse(localStorage.getItem("dataUser")) : null)
+    const getUserData = () => {
+        try {
+            const data = localStorage.getItem("dataUser");
+            return data ? JSON.parse(data) : null;
+        } catch (e) {
+            console.error("Parsing dataUser gagal:", e);
+            return null;
+        }
+    };
+    const [userData, setUserData_] = useState(getUserData());
 
     const setAccessToken = (newAccessToken) => {
         setAccessToken_(newAccessToken)
@@ -43,6 +52,14 @@ const AuthProvider = ({children}) => {
             localStorage.removeItem('refreshToken');
         }
     }, [refreshToken])
+
+    useEffect(() => {
+        if(userData) {
+            localStorage.setItem('dataUser', JSON.stringify(userData));
+        } else {
+            localStorage.removeItem('dataUser');
+        }
+    }, [userData])
 
     const contextValue = useMemo(
         () => ({
