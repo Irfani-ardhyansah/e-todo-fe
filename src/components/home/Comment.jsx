@@ -11,14 +11,14 @@ import './Comment.css';
 import Avatar from "../Avatar";
 
 const Comment = ({ comment, level = 0 }) => {
-    const { name, message, comments = [], created_at = "now" } = comment;
+    const { name, message, response = [], time = "now" } = comment;
 
     return (
         <div className="comment" style={{ marginLeft: `${level * 24}px` }}>
-            <Avatar name={name} />
+            <Avatar name="Mochamad Irfani" />
             <div className="comment-content">
             <div className="comment-name">{name}</div>
-            <div className="comment-time">{created_at}</div>
+            <div className="comment-time">{time}</div>
             <div className="comment-message">{message}</div>
             <div className="comment-actions">
                 <FontAwesomeIcon icon={faReply} title="Reply" />
@@ -28,9 +28,9 @@ const Comment = ({ comment, level = 0 }) => {
                 {/* <FontAwesomeIcon icon={faEllipsisH} title="More" /> */}
             </div>
     
-            {comments.length > 0 && (
+            {response.length > 0 && (
                 <div className="comment-replies">
-                {comments.map((reply) => (
+                {response.map((reply) => (
                     <Comment key={reply.id} comment={reply} level={level + 1} />
                 ))}
                 </div>

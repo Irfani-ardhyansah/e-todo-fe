@@ -16,6 +16,8 @@ import { setActiveTaskId } from '../../redux/sidebarSlice'
 import useTimerService from '../../services/useTimerService';
 import useTaskDetailHistoryService from "../../services/useTaskDetailHistoryService"
 import useTimer from '../../hooks/useTimer';
+import useCommentService from '../../services/useCommentService';
+
 import TaskHistoryList from './TaskHistoryList';
 import useTaskService from '../../services/useTaskService';
 
@@ -31,6 +33,8 @@ const Content = () => {
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
     const { GetTaskDetail } = useTaskService();
     const { GetTaskDetailHistory, GetTaskDetailHistoryByTaskId } = useTaskDetailHistoryService();
+    const { GetComment, DoPostComment } = useCommentService();
+
     const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
 
     const [taskDetailHistories, setTaskDetailHistories] = useState([]);
@@ -40,6 +44,7 @@ const Content = () => {
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [taskDetail, setTaskDetail] = useState(null);
     const [isFormCommentActive, setFormCommentActive] = useState(false);
+    const [comments, setComment] = useState([]);
 
     useEffect(() => {
         fetchTaskDetailHistory();
@@ -57,10 +62,28 @@ const Content = () => {
         if(activeTaskId) {
             fetchTaskDetail();
             fetchTaskDetailHistoryByTaskId();
+            fetchComments();
         } else {
             fetchTaskDetailHistory();
         }
     }, [activeTaskId])
+
+    const fetchComments = async () => {
+        try {
+            const result = await GetComment(`/task/${activeTaskId}/comments`);
+                        
+            if (!result || !Array.isArray(result.data)) {
+                setComment([]); 
+                return;
+            }
+
+            const updated = result.data.map((item) => ({ ...item, uuid: uuidv4() }));
+            console.log('Comments fetched:', updated);
+            setComment(updated);
+        } catch (error) {
+            console.error('Failed to fetch comments:', error);
+        }
+    };
     
     const fetchTaskDetailHistory = async () => {
         try {
@@ -175,33 +198,6 @@ const Content = () => {
         // }
     };
 
-    const commentsData = [
-    {
-        id: 1,
-        name: "Rachmat Fajarudin",
-        created_at: "2025-06-16 06:17:35",
-        message: "Sorry for the late response.",
-        comments: [
-            {
-                id: 2,
-                name: "Luciano Pietrantonio",
-                created_at: "2025-06-16 06:17:35",
-                message: "No problem! Thanks for updating.",
-                comments: [
-                {
-                    id: 3,
-                    name: "Andi Rian",
-                    created_at: "2025-06-16 06:17:35",
-                    message: "Same issue here!",
-                    comments: [],
-                },
-                ],
-            },
-        ],
-    },
-    ];
-
-
     return (
         <>
             <div className="row mt-4">
@@ -253,7 +249,7 @@ const Content = () => {
                                 </div>
 
                                 <div className="form-comment">
-                                        {commentsData.map((comment) => (
+                                        {comments.map((comment) => (
                                             <Comment key={comment.id} comment={comment} />
                                         ))}
                                 </div>
@@ -287,45 +283,45 @@ const Content = () => {
                         </div>
                     </>
                 }
-                        <div className="content-section mt-2">
-                            <div className="card">
+                    <div className="content-section mt-2">
+                        <div className="card">
+                            {activeTaskId && taskDetail &&  
+                                <>
+                                    <div className="card-header timer-header">
+                                        <button className="btn-filter-sidebar" > Timers </button>
+                                    </div>
+                                </>
+                            }
+                            <ul className="list-group list-group-flush timer-group">
                                 {activeTaskId && taskDetail &&  
                                     <>
-                                        <div className="card-header timer-header">
-                                            <button className="btn-filter-sidebar" > Timers </button>
+                                    <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
+                                        <div className="left-side">
+                                            <input 
+                                                    className="timer-title" 
+                                                    name="title" 
+                                                    value={formInput.title}
+                                                    onChange={handleChange}
+                                                    placeholder="What are you working on ?"
+                                                    readOnly={isReadOnly} />
                                         </div>
+                                        <div className="right-side d-flex align-items-center">
+                                            <div className="timer me-3">
+                                                {formatTime(time)}
+                                            </div>
+
+                                            <button className="btn-action" onClick={toggleTimer}>
+                                                {isTimerRun ? "Stop" : "Start"}
+                                            </button>
+
+                                        </div>
+                                    </li>
                                     </>
                                 }
-                                <ul className="list-group list-group-flush timer-group">
-                                    {activeTaskId && taskDetail &&  
-                                        <>
-                                        <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
-                                            <div className="left-side">
-                                                <input 
-                                                        className="timer-title" 
-                                                        name="title" 
-                                                        value={formInput.title}
-                                                        onChange={handleChange}
-                                                        placeholder="What are you working on ?"
-                                                        readOnly={isReadOnly} />
-                                            </div>
-                                            <div className="right-side d-flex align-items-center">
-                                                <div className="timer me-3">
-                                                    {formatTime(time)}
-                                                </div>
-
-                                                <button className="btn-action" onClick={toggleTimer}>
-                                                    {isTimerRun ? "Stop" : "Start"}
-                                                </button>
-
-                                            </div>
-                                        </li>
-                                        </>
-                                    }
-                                    <TaskHistoryList histories={taskDetailHistories} />
-                                </ul>
-                            </div>
+                                <TaskHistoryList histories={taskDetailHistories} />
+                            </ul>
                         </div>
+                    </div>
                 </div>
             </div>
         </>
