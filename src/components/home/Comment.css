@@ -20,6 +20,7 @@
   
   .comment-content {
     font-size: 14px;
+    width: 92%;
   }
   
   .comment-name {
@@ -61,3 +62,25 @@
     margin-top: 12px;
   }
   
+  .btn-save-comment {
+    margin-top: 10px;
+    margin-right: 5px;
+    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    color: white;
+    background: #439eda;
+    border-color: transparent;
+    border-radius: 5px;
+  }
+
+  .btn-cancel-comment {
+    margin-right: 5px;
+    color: white;
+    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    background: transparent;
+    border-color: transparent;
+    border-radius: 5px;
+  }

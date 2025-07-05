@@ -202,26 +202,62 @@ const Content = () => {
         setFormComment((prev) => ({ ...prev, message: val }));
     }, []);
 
-    const handleSaveComment = async (e) => {
-        e.preventDefault();
+    const submitComment = async ({ parent_id = null, comment }) => {
         try {
             const formData = {
                 user_id: userData.id,
                 task_id: activeTaskId,
-                parent_id: null, 
-                comment: formComment.message
+                parent_id,
+                comment
             };
-
-            let response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
-            if(response.code == 200) {
-                fetchComments();
+    
+            const response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
+    
+            if (response.code == 200) {
+                fetchComments(); 
+                return { success: true };
             } else {
-                console.log(response.code)
+                return { success: false, message: response.message };
             }
-        } catch(error) {
+        } catch (error) {
             console.error(`Error Save Task ${error}`);
+            return { success: false, error };
         }
-    }
+    };
+
+    const handleSaveComment = async (e) => {
+        e.preventDefault();
+        const result = await submitComment({
+            parent_id: null,
+            comment: formComment.message
+        });
+    
+        if (result.success) {
+            setFormCommentActive(false);
+            setFormComment({ message: "" });
+        }
+    };
+
+    // const handleSaveComment = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const formData = {
+    //             user_id: userData.id,
+    //             task_id: activeTaskId,
+    //             parent_id: null, 
+    //             comment: formComment.message
+    //         };
+
+    //         let response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
+    //         if(response.code == 200) {
+    //             fetchComments();
+    //             setFormCommentActive(false);
+    //             setFormComment({ message: "" });
+    //         }
+    //     } catch(error) {
+    //         console.error(`Error Save Task ${error}`);
+    //     }
+    // }
 
     return (
         <>
@@ -279,7 +315,7 @@ const Content = () => {
 
                                 <div className="form-comment">
                                         {comments.map((comment) => (
-                                            <Comment key={comment.id} comment={comment} />
+                                            <Comment key={comment.id} comment={comment} onSubmitComment={submitComment} />
                                         ))}
                                 </div>
                             </div>
