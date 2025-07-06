@@ -62,6 +62,8 @@ const Content = () => {
                 title: localStorageTimerData.timerTitleRedux,
             }));
         }
+
+        console.log(userData);
     }, [])
 
     useEffect(() => {
@@ -84,7 +86,6 @@ const Content = () => {
             }
 
             const updated = result.data.map((item) => ({ ...item, uuid: uuidv4() }));
-            console.log('Comments fetched:', updated);
             setComment(updated);
         } catch (error) {
             console.error('Failed to fetch comments:', error);
@@ -238,27 +239,6 @@ const Content = () => {
         }
     };
 
-    // const handleSaveComment = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const formData = {
-    //             user_id: userData.id,
-    //             task_id: activeTaskId,
-    //             parent_id: null, 
-    //             comment: formComment.message
-    //         };
-
-    //         let response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
-    //         if(response.code == 200) {
-    //             fetchComments();
-    //             setFormCommentActive(false);
-    //             setFormComment({ message: "" });
-    //         }
-    //     } catch(error) {
-    //         console.error(`Error Save Task ${error}`);
-    //     }
-    // }
-
     return (
         <>
             <div className="row mt-4">
@@ -274,7 +254,7 @@ const Content = () => {
                                         isFormCommentActive ? (
                                             <>
                                                 <div className="d-flex align-items-center">
-                                                    <Avatar name="Mochamad Irfani" />
+                                                    <Avatar name={userData.name} />
                                                     <ReactQuill
                                                         theme="snow"
                                                         placeholder="Add a comment..."
@@ -300,7 +280,7 @@ const Content = () => {
                                         ) : (
                                             <>
                                             <div className="d-flex align-items-center">
-                                                <Avatar name="Mochamad Irfani" />
+                                                <Avatar name={userData.name} />
                                                 <input 
                                                     onFocus={() => setFormCommentActive(true)}
                                                     className="form-comment-default p-1 me-1" 

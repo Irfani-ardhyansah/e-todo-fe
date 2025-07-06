@@ -11,13 +11,11 @@ import ReactQuill from 'react-quill';
 import useCommentService from '../../services/useCommentService';
 
 const Comment = ({ comment = {}, onSubmitComment, level = 0 }) => {
-    const { id, name, message, response = [], time = "now" } = comment;
+    const { id, name, message, response = [], time = "now", user = {} } = comment;
     const [replyingTo, setReplyingTo] = useState(false);
     const [replyMessage, setReplyMessage] = useState({
         message: "",
     });
-
-    const { GetComment, DoPostComment } = useCommentService();
 
     const handleReplyClick = () => {
         setReplyingTo(!replyingTo); // toggle tampil/enggak
@@ -45,7 +43,7 @@ const Comment = ({ comment = {}, onSubmitComment, level = 0 }) => {
     
     return (
         <div className="comment" style={{ marginLeft: `${level * 24}px` }}>
-            <Avatar name="Mochamad Irfani" />
+            <Avatar name={user.name} />
             <div className="comment-content">
             <div className="comment-name">{name}</div>
             <div className="comment-time">{time}</div>
