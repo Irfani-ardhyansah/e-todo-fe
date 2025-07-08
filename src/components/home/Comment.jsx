@@ -6,19 +6,22 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import './Comment.css';
 import Avatar from "../Avatar";
-import ReactQuill from 'react-quill';
+import CommentEditor from "./CommentEditor";
 
 import useCommentService from '../../services/useCommentService';
 
-const Comment = ({ comment = {}, onSubmitComment, level = 0 }) => {
+const Comment = ({ user_id, comment = {}, onSubmitComment, level = 0 }) => {
     const { id, name, message, response = [], time = "now", user = {} } = comment;
     const [replyingTo, setReplyingTo] = useState(false);
     const [replyMessage, setReplyMessage] = useState({
         message: "",
     });
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [editMessage, setEditMessage] = useState(comment.message);
+
     const handleReplyClick = () => {
-        setReplyingTo(!replyingTo); // toggle tampil/enggak
+        setReplyingTo(!replyingTo); 
     };
 
     const handleSubmitReply = async () => {
@@ -40,6 +43,11 @@ const Comment = ({ comment = {}, onSubmitComment, level = 0 }) => {
     const handleReplyMessage = useCallback((val) => {
         setReplyMessage({ message: val });
     }, []);
+
+    const handleEditSubmit = () => {
+        // updateComment(comment.id, editMessage); // Panggil API atau dispatch action
+        setIsEditing(false);
+    };
     
     return (
         <div className="comment" style={{ marginLeft: `${level * 24}px` }}>
@@ -47,38 +55,52 @@ const Comment = ({ comment = {}, onSubmitComment, level = 0 }) => {
             <div className="comment-content">
             <div className="comment-name">{name}</div>
             <div className="comment-time">{time}</div>
-            <div className="comment-message" dangerouslySetInnerHTML={{ __html: message }}></div> 
-            <div className="comment-actions">
-                <FontAwesomeIcon icon={faReply} title="Reply"  onClick={handleReplyClick} />
-                <FontAwesomeIcon icon={faPenToSquare} title="Edit" />
-            </div>
-            {replyingTo && (
-                <div className="reply-editor" style={{ marginTop: "1rem" }}>
-                <ReactQuill 
-                    value={replyMessage.message} 
-                    onChange={handleReplyMessage}
-                    placeholder="Type your reply here..." 
-                    theme="snow"
-                    className="form-comment-input"
-                    />
-                <button 
-                    onClick={handleSubmitReply} 
-                    className="btn-save-comment">
-                        Save
-                </button>
+            {isEditing ? (
+                <CommentEditor
+                    value={editMessage}
+                    onChange={setEditMessage}
+                    onSubmit={handleEditSubmit}
+                    onCancel={() => setIsEditing(false)}
+                />
+                ) : (
+                <div
+                    className="comment-message"
+                    dangerouslySetInnerHTML={{ __html: message }}
+                />
+                )}
 
-                <button 
-                    onClick={() => setReplyingTo(false)}
-                    className="btn-cancel-comment">
-                    Cancel
-                </button>
+                <div className="comment-actions">
+                    {replyingTo && !isEditing ? (
+                        <CommentEditor
+                        value={replyMessage.message}
+                        onChange={handleReplyMessage}
+                        onSubmit={handleSubmitReply}
+                        onCancel={() => setReplyingTo(false)}
+                        />
+                    ) : null}
+
+                    {!isEditing && !replyingTo && (
+                        <>
+                        <FontAwesomeIcon
+                            icon={faReply}
+                            title="Reply"
+                            onClick={handleReplyClick}
+                        />
+                        {user_id === user.id && (
+                            <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            title="Edit"
+                            onClick={() => setIsEditing(true)}
+                            />
+                        )}
+                        </>
+                    )}
                 </div>
-            )}
-    
+
             {response.length > 0 && (
                 <div className="comment-replies">
                 {response.map((reply) => (
-                    <Comment key={reply.id} comment={reply} onSubmitComment={onSubmitComment} level={level + 1} />
+                    <Comment key={reply.id} user_id={user_id} comment={reply} onSubmitComment={onSubmitComment} level={level + 1} />
                 ))}
                 </div>
             )}

@@ -24,6 +24,8 @@ import useTaskService from '../../services/useTaskService';
 
 import ReactQuill from 'react-quill';
 
+import CommentEditor from "./CommentEditor";
+
 const ACTIVE_TASK_KEY = "active_task"; 
 const TIMER_DATA_KEY = 'stopwatch_data_state';
 
@@ -250,52 +252,31 @@ const Content = () => {
 
                             <div className="task-comment-section">
                                 <div className="form-comment-field"> 
-                                    {
-                                        isFormCommentActive ? (
-                                            <>
-                                                <div className="d-flex align-items-center">
-                                                    <Avatar name={userData.name} />
-                                                    <ReactQuill
-                                                        theme="snow"
-                                                        placeholder="Add a comment..."
-                                                        onChange={handleCommentChange}
-                                                        value={formComment.message}
-                                                        className="form-comment-input"
-                                                    />
-                                                </div>
-                                                <div className="container-button-comment">
-                                                    <button 
-                                                        onClick={handleSaveComment}
-                                                        className="btn-save-comment">
-                                                        Save
-                                                    </button>
-
-                                                    <button 
-                                                        onClick={() => setFormCommentActive(false)}
-                                                        className="btn-cancel-comment">
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                            <div className="d-flex align-items-center">
-                                                <Avatar name={userData.name} />
+                                    <div className="d-flex align-items-center">
+                                        <Avatar name={userData.name} />
+                                        {
+                                            isFormCommentActive ? (
+                                                <CommentEditor
+                                                    value={formComment.message}
+                                                    onChange={handleCommentChange}
+                                                    onSubmit={handleSaveComment}
+                                                    onCancel={() => setFormCommentActive(false)}
+                                                />
+                                            ) : (
                                                 <input 
                                                     onFocus={() => setFormCommentActive(true)}
                                                     className="form-comment-default p-1 me-1" 
                                                     placeholder="Add a comment..."
                                                     readOnly
                                                 />
-                                            </div>
-                                        </>
-                                        )
-                                    }
+                                            )
+                                        }
+                                    </div>
                                 </div>
 
                                 <div className="form-comment">
                                         {comments.map((comment) => (
-                                            <Comment key={comment.id} comment={comment} onSubmitComment={submitComment} />
+                                            <Comment key={comment.id} user_id={userData.id} comment={comment} onSubmitComment={submitComment} />
                                         ))}
                                 </div>
                             </div>
