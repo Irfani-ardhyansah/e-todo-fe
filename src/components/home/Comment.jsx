@@ -44,9 +44,21 @@ const Comment = ({ user_id, comment = {}, onSubmitComment, level = 0 }) => {
         setReplyMessage({ message: val });
     }, []);
 
-    const handleEditSubmit = () => {
-        // updateComment(comment.id, editMessage); // Panggil API atau dispatch action
-        setIsEditing(false);
+    const handleEditSubmit = async () => {
+        if (!editMessage.trim()) return;
+
+        const result = await onSubmitComment({
+            parent_id: null,
+            comment: editMessage,
+            comment_id: id,
+        });
+
+        if (result.success) {
+            setIsEditing(false);
+        } else {
+            console.error("Failed to put reply:", result.error || result.message);
+        }
+
     };
     
     return (

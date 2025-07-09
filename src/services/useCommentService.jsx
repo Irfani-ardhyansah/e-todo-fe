@@ -23,7 +23,17 @@ const useCommentService = () => {
         }
     };
 
-    return { GetComment, DoPostComment };
+    const DoPutComment = async (endpoint, data) => {
+        try {
+            const response = await axiosInstance.put(endpoint, data);
+            return response.data;
+        } catch (error) {
+            console.error('doPutTask service error:', error);
+            throw error;
+        }
+    };
+
+    return { GetComment, DoPostComment, DoPutComment };
 };
 
 export default useCommentService;

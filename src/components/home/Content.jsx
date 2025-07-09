@@ -37,7 +37,7 @@ const Content = () => {
     const { DoPostTimer, DoUpdateTimer } = useTimerService();
     const { GetTaskDetail } = useTaskService();
     const { GetTaskDetailHistory, GetTaskDetailHistoryByTaskId } = useTaskDetailHistoryService();
-    const { GetComment, DoPostComment } = useCommentService();
+    const { GetComment, DoPostComment, DoPutComment } = useCommentService();
 
     const { time, setTime, formatTime, reset, setLastStart, isTimerRun, setIsTimerRun, timerId, setTimerId } = useTimer();
 
@@ -205,7 +205,7 @@ const Content = () => {
         setFormComment((prev) => ({ ...prev, message: val }));
     }, []);
 
-    const submitComment = async ({ parent_id = null, comment }) => {
+    const submitComment = async ({ parent_id = null, comment, comment_id = null }) => {
         try {
             const formData = {
                 user_id: userData.id,
@@ -214,7 +214,12 @@ const Content = () => {
                 comment
             };
     
-            const response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
+            let response;
+            if (comment_id) {
+                response = await DoPutComment(`/task/${activeTaskId}/comments/${comment_id}`, formData);
+            } else {
+                response = await DoPostComment(`/task/${activeTaskId}/comments`, formData);
+            }
     
             if (response.code == 200) {
                 fetchComments(); 
