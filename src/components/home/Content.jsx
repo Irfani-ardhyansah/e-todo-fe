@@ -64,8 +64,6 @@ const Content = () => {
                 title: localStorageTimerData.timerTitleRedux,
             }));
         }
-
-        console.log(userData);
     }, [])
 
     useEffect(() => {
@@ -292,67 +290,67 @@ const Content = () => {
                 <ModalTask />
 
                 <div className="col-4">
-
-                {activeTaskId && taskDetail &&  
+                {activeTaskId && taskDetail &&
                     <>
-                        <div className="filter-section">
-                            <div className="custom-select-wrapper">
-                                <select
-                                    className={`select-filter ${taskDetail?.status || ''}`}
-                                    name="status"
-                                    value={taskDetail?.status || ''}
-                                >
-                                    <option value="" disabled hidden>Pilih</option>
-                                    <option value="open">Open</option>
-                                    <option value="closed">Closed</option>
-                                    <option value="finished">Finished</option>
-                                    <option value="in_progress">In Progress</option>
-                                    <option value="in_review">In Review</option>
-                                </select>
-                                <span className="custom-arrow">&#9662;</span>
+                        {userData?.id === taskDetail?.user_id && (
+                            <div className="filter-section">
+                                <div className="custom-select-wrapper">
+                                    <select
+                                        className={`select-filter ${taskDetail?.status || ''}`}
+                                        name="status"
+                                        value={taskDetail?.status || ''}
+                                    >
+                                        <option value="" disabled hidden>Pilih</option>
+                                        <option value="open">Open</option>
+                                        <option value="closed">Closed</option>
+                                        <option value="finished">Finished</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="in_review">In Review</option>
+                                    </select>
+                                    <span className="custom-arrow">&#9662;</span>
+                                </div>
                             </div>
-                        </div>
-                    </>
-                }
-                    <div className="content-section mt-2">
-                        <div className="card">
-                            {activeTaskId && taskDetail &&  
-                                <>
+                        )}
+
+                        <div className="content-section mt-2">
+                            <div className="card">
+                                {userData?.id === taskDetail?.user_id && (
                                     <div className="card-header timer-header">
-                                        <button className="btn-filter-sidebar" > Timers </button>
+                                        <button className="btn-filter-sidebar">Timers</button>
                                     </div>
-                                </>
-                            }
-                            <ul className="list-group list-group-flush timer-group">
-                                {activeTaskId && taskDetail &&  
-                                    <>
-                                    <li className={`list-group-item d-flex justify-content-between align-items-center timer-content`} >
-                                        <div className="left-side">
-                                            <input 
+                                )}
+
+                                <ul className="list-group list-group-flush timer-group">
+                                    {userData?.id === taskDetail?.user_id && (
+                                        <li className="list-group-item d-flex justify-content-between align-items-center timer-content">
+                                            <div className="left-side">
+                                                <input 
                                                     className="timer-title" 
                                                     name="title" 
                                                     value={formInput.title}
                                                     onChange={handleChange}
-                                                    placeholder="What are you working on ?"
-                                                    readOnly={isReadOnly} />
-                                        </div>
-                                        <div className="right-side d-flex align-items-center">
-                                            <div className="timer me-3">
-                                                {formatTime(time)}
+                                                    placeholder="What are you working on ?" 
+                                                    readOnly={isReadOnly} 
+                                                />
                                             </div>
+                                            <div className="right-side d-flex align-items-center">
+                                                <div className="timer me-3">
+                                                    {formatTime(time)}
+                                                </div>
+                                                <button className="btn-action" onClick={toggleTimer}>
+                                                    {isTimerRun ? "Stop" : "Start"}
+                                                </button>
+                                            </div>
+                                        </li>
+                                    )}
 
-                                            <button className="btn-action" onClick={toggleTimer}>
-                                                {isTimerRun ? "Stop" : "Start"}
-                                            </button>
-
-                                        </div>
-                                    </li>
-                                    </>
-                                }
-                                <TaskHistoryList histories={taskDetailHistories} />
-                            </ul>
+                                    <TaskHistoryList histories={taskDetailHistories} />
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    </>
+                }
+
                 </div>
             </div>
         </>
