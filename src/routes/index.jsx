@@ -18,6 +18,14 @@ const Routes = () => {
                 {
                     path: "/",
                     element: < Home />
+                },
+                {
+                    path: "/admin", 
+                    element: < AdminDashboard />
+                },
+                {
+                    path: "/admin/users", 
+                    element: < AdminUser />
                 }
             ]
         }
@@ -27,14 +35,6 @@ const Routes = () => {
         {
             path: "/login",
             element: < Login />
-        },
-        {
-            path: "/admin", 
-            element: < AdminDashboard />
-        },
-        {
-            path: "/admin/users", 
-            element: < AdminUser />
         }
     ]
     
